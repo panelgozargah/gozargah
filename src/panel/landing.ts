@@ -27,12 +27,14 @@ export function landingHtml(lang: string): string {
     '<link rel="icon" href="' + LOGO_FAV_B64 + '">' +
     '<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">' +
     '<style>' + PANEL_CSS +
-    '.land{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;gap:6px}' +
-    '.land .emblem{width:130px;margin-bottom:10px}' +
-    '.land h1{font-size:34px;font-weight:800}' +
-    '.land p{color:var(--mut);font-size:15px;max-width:420px}' +
-    '.land .p2{font-size:13px;color:var(--mut2);font-style:italic}' +
-    '.land footer{position:absolute;bottom:18px;font-size:11px;color:var(--mut2)}' +
+    '.land{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;gap:6px;position:relative}' +
+    '.land::before{content:"";position:absolute;top:calc(50% - 210px);left:50%;transform:translateX(-50%);width:420px;height:260px;' +
+    'background:radial-gradient(ellipse,rgba(0,217,255,0.10),rgba(124,58,237,0.06) 55%,transparent 75%);pointer-events:none}' +
+    '.land .emblem{width:130px;margin-bottom:10px;position:relative}' +
+    '.land h1{font-size:36px;font-weight:800;letter-spacing:.3px}' +
+    '.land p{color:var(--gz-text-muted);font-size:15px;max-width:420px}' +
+    '.land .p2{font-size:13px;color:var(--gz-text-disabled);font-style:italic}' +
+    '.land footer{position:absolute;bottom:18px;font-size:11px;color:var(--gz-text-disabled)}' +
     '</style></head><body>' +
     '<div class="gz-bg"></div>' +
     '<div class="land">' +

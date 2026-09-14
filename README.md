@@ -6,10 +6,11 @@
 
 **دروازهٔ امن عبور — پنل پروکسی چندکاربره روی Cloudflare Workers**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-8B5CF6?style=flat-square)](#)
-[![License: MIT](https://img.shields.io/badge/license-MIT-2CC9FF?style=flat-square)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Cloudflare%20Workers-C026D3?style=flat-square)](#)
-[![Storage](https://img.shields.io/badge/storage-Cloudflare%20D1-8B5CF6?style=flat-square)](#)
+[![Version](https://img.shields.io/badge/version-1.1.0-00D9FF?style=flat-square)](#)
+[![License: MIT](https://img.shields.io/badge/license-MIT-2563EB?style=flat-square)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Cloudflare%20Workers-7C3AED?style=flat-square)](#)
+[![Storage](https://img.shields.io/badge/storage-Cloudflare%20D1-D946EF?style=flat-square)](#)
+[![UI](https://img.shields.io/badge/UI-Gozargah%20Nexus-050816?style=flat-square)](#-رابط-کاربری)
 
 *VLESS + Trojan over WebSocket · Real byte accounting · Beautiful FA/EN RTL panel · Zero runtime dependencies*
 
@@ -43,6 +44,26 @@
 - ❌ rate-limit فرّار per-isolate ندارد → **قفل ورود ماندگار در D1**
 - ❌ وابستگی رانتایم به raw.githubusercontent یا سرویس QR ثالث ندارد → **همه‌چیز embed شده**
 - ❌ race در JSON-blob ندارد → **قفل خوش‌بینانه (rev) روی تنظیمات + جدول رابطه‌ای کاربران**
+
+## 🎨 رابط کاربری — Gozargah Nexus UI
+
+رابط پنل با دیزاین‌سیستم اختصاصی **Gozargah Nexus UI** ساخته شده: تم سینمایی تیره روی `#050816`، گرادیان برند Cyan→Blue→Purple→Magenta، گلس‌مورفیسم ظریف، سایدبار شیشه‌ای ۲۵۰px (در موبایل: دراور با overlay)، تایپوگرافی Inter + Vazirmatn، گرید فیوچریستیک و ذرات بسیار کم‌تراکم در پس‌زمینه.
+
+| ویژگی | جزئیات |
+|--------|--------|
+| چیدمان | سایدبار ثابت دسکتاپ ← دراور کشویی موبایل (کلیک بیرون/Esc می‌بندد) |
+| RTL/LTR | فارسی پیش‌فرض RTL، انگلیسی LTR — سایدبار و توست‌ها با پراپرتی‌های منطقی جابه‌جا می‌شوند |
+| حرکت | ترنزیشن‌های ۱۸۰–۲۵۰ms؛ با `prefers-reduced-motion` همهٔ انیمیشن‌ها غیرفعال می‌شوند |
+| دسترس‌پذیری | حالت فوکوس واضح (`:focus-visible`)، وضعیت‌ها بدون اتکای صرف به رنگ، کنتراست بالا |
+| آیکون‌ها | SVG خطی درون‌سازی‌شده — بدون فونت‌آیکون، بدون درخواست خارجی |
+
+| داشبورد (فارسی) | کاربران (فارسی) |
+|---|---|
+| ![Dashboard](docs/preview-dashboard.png) | ![Users](docs/preview-users.png) |
+
+| کاربران (انگلیسی) | موبایل (دراور) |
+|---|---|
+| ![Users EN](docs/preview-users-en.png) | ![Mobile](docs/preview-mobile.png) |
 
 ## 📋 پیش‌نیازها
 

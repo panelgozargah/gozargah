@@ -87,6 +87,7 @@ export const FA: I18nDict = {
   neverSeen: 'هنوز متصل نشده',
   statsNote: 'شمارش از آخرین بیداری Worker — دقیق و بر اساس بایت واقعی.',
   lang: 'English',
+  menu: 'منو',
   panelLink: 'آدرس پنل',
   copySubTip: 'این لینک را در کلاینت (v2rayNG، Streisand، Hiddify و…) وارد کنید.',
 };
@@ -174,6 +175,7 @@ export const EN: I18nDict = {
   neverSeen: 'Never connected',
   statsNote: 'Counted since last worker wake — real bytes, honestly measured.',
   lang: 'فارسی',
+  menu: 'Menu',
   panelLink: 'Panel URL',
   copySubTip: 'Paste this link into your client (v2rayNG, Streisand, Hiddify, …).',
 };
