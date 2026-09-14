@@ -1,0 +1,16 @@
+name = "gozargah"
+main = "src/index.ts"
+compatibility_date = "2025-01-15"
+
+# ---------------------------------------------------------------
+# D1 database (required for panel persistence: users + settings)
+# Create it once, then paste the returned database_id below:
+#     npx wrangler d1 create gozargah
+# ---------------------------------------------------------------
+[[d1_databases]]
+binding = "GZ_DB"
+database_name = "gozargah"
+database_id = "00000000-0000-0000-0000-000000000000"
+
+[observability]
+enabled = true

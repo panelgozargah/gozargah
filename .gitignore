@@ -1,0 +1,9 @@
+node_modules/
+.wrangler/
+dist/
+.dev.vars
+*.log
+.DS_Store
+
+preview.html
+scripts/.preview-build.mjs
