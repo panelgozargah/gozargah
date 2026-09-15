@@ -1,4 +1,8 @@
 <div align="center">
+  <img src="https://raw.githubusercontent.com/panelgozargah/gozargah/main/docs/banner.png" alt="Gozargah Nexus UI" width="100%">
+</div>
+
+<div align="center">
 
 <img src="docs/logo.png" alt="Gozargah" width="140">
 
