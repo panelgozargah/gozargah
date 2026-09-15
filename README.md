@@ -20,21 +20,21 @@
 
 ## ✨ معرفی
 
-**گذرگاه** یک پنل پروکسی کامل روی Cloudflare Workers است که با نگاهی نقادانه به ۵ پنل شناخته‌شدهٔ این حوزه (BPB، Nova، nahan، Z-E-U-S، edgetunnel) طراحی شده: از **معماری ماژولار**، **امنیت واقعی** و **حسابداری دقیق بایت** برخوردار است و هیچ‌کدام از آنتی‌پترن‌های رایج این خانواده را تکرار نمی‌کند.
+**گذرگاه** یک پنل پروکسی کامل روی Cloudflare Workers است که با تمرکز بر **معماری ماژولار**، **امنیت واقعی** و **حسابداری دقیق بایت** طراحی شده و هیچ‌کدام از آنتی‌پترن‌های رایج این حوزه را تکرار نمی‌کند.
 
-## 🧬 معماری از دل تحلیل ۵ پنل
+## 🧬 معماری ماژولار
 
-| لایه | الهام گرفته از | پیاده‌سازی در گذرگاه |
-|------|----------------|------------------------|
-| ساختار کد | BPB | TypeScript ماژولار + build تک‌فایلی |
-| دیتا-پلین | edgetunnel / Z-E-U-S | dial مستقیم → زنجیرهٔ fallback پروکسی‌آی‌پی، انتخاب پایدار per-user |
-| ذخیره‌سازی | Nova / nahan | **D1 رابطه‌ای** (users / events / throttle / kv_store) با کش in-isolate و promise-dedup |
-| حسابداری | — (اشکال nahan را می‌بندد) | **بایت واقعی** از طول chunkها + flush دسته‌ای (coalescing) |
-| چندکاربره | Nova | سهمیه بایت، انقضا، فعال/غیرفعال، چرخش اعتبار |
-| امنیت | — (ضعف مشترک همه) | **PBKDF2-SHA256 (۱۰۰هزار دور)**، سشن HMAC امضاشده با انقضا، rate-limit پایدار در D1 |
-| استتار | nahan | هر مسیر ناشناخته → صفحهٔ بی‌ضرر؛ `robots.txt` بسته؛ پنل فقط با مسیر مخفی |
-| اشتراک | همه | تولید کامل درون Worker (بدون subconverter ثالث) — Base64 / Clash-Meta / Sing-box |
-| هدرهای کلاینت | Nova | `Subscription-Userinfo` با **عدد واقعی**، نه نمایشی |
+| لایه | پیاده‌سازی در گذرگاه |
+|------|------------------------|
+| ساختار کد | TypeScript ماژولار + build تک‌فایلی |
+| دیتا-پلین | dial مستقیم → زنجیرهٔ fallback پروکسی‌آی‌پی، انتخاب پایدار per-user |
+| ذخیره‌سازی | **D1 رابطه‌ای** (users / events / throttle / kv_store) با کش in-isolate و promise-dedup |
+| حسابداری | **بایت واقعی** از طول chunkها + flush دسته‌ای (coalescing) |
+| چندکاربره | سهمیه بایت، انقضا، فعال/غیرفعال، چرخش اعتبار |
+| امنیت | **PBKDF2-SHA256 (۱۰۰هزار دور)**، سشن HMAC امضاشده با انقضا، rate-limit پایدار در D1 |
+| استتار | هر مسیر ناشناخته → صفحهٔ بی‌ضرر؛ `robots.txt` بسته؛ پنل فقط با مسیر مخفی |
+| اشتراک | تولید کامل درون Worker (بدون subconverter ثالث) — Base64 / Clash-Meta / Sing-box |
+| هدرهای کلاینت | `Subscription-Userinfo` با **عدد واقعی**، نه نمایشی |
 
 ### چرا گذرگاه متفاوت است؟
 
@@ -145,18 +145,12 @@ v2rayNG · v2rayN · Streisand · Shadowrocket · Hiddify · Clash-Meta/Stash ·
 
 ## 🛣 نقشهٔ راه
 
-- [ ] Shadowsocks AEAD (الگوی edgetunnel)
+- [ ] Shadowsocks AEAD
 - [ ] فوروارد UDP-DNS (پورت ۵۳) و NAT64
 - [ ] شروع شمارش سهمیه از اولین اتصال + ریست خودکار دوره‌ای
 - [ ] ECH و fragment پریست‌های اپراتورهای ایران
 - [ ] ربات تلگرام با FSM روی D1
 - [ ] تست‌های خودکار (vitest + miniflare)
-
-## 🙌 قدردانی
-
-گذرگاه از مطالعهٔ تطبیقی این پروژه‌ها الهام گرفته (الگو، نه کد — به‌جز لایسنس MIT):
-
-[Bia-Pain-Bache/BPB-Worker-Panel](https://github.com/bia-pain-bache/BPB-Worker-Panel) · [cmliu/edgetunnel](https://github.com/cmliu/edgetunnel) · [itsyebekhe/nahan](https://github.com/itsyebekhe/nahan) · [panel-zeus](https://github.com/panel-zeus/Z-E-U-S) · [IRNova/Nova-Proxy](https://github.com/IRNova/Nova-Proxy)
 
 ## 📄 لایسنس
 
