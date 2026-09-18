@@ -1,82 +1,98 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/panelgozargah/gozargah/main/docs/banner.png" alt="Gozargah Nexus UI" width="100%">
-</div>
 
-<div align="center">
+<img src="docs/hero.svg" alt="گذرگاه — Gozargah · دروازهٔ امن عبور روی Cloudflare Workers" width="100%">
 
-<img src="docs/logo.png" alt="Gozargah" width="140">
-
-# گذرگاه — Gozargah
+# گذرگاه · Gozargah
 
 **دروازهٔ امن عبور — پنل پروکسی چندکاربره روی Cloudflare Workers**
 
-[![Version](https://img.shields.io/badge/version-1.1.0-00D9FF?style=flat-square)](#)
-[![License: MIT](https://img.shields.io/badge/license-MIT-2563EB?style=flat-square)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Cloudflare%20Workers-7C3AED?style=flat-square)](#)
-[![Storage](https://img.shields.io/badge/storage-Cloudflare%20D1-D946EF?style=flat-square)](#)
-[![UI](https://img.shields.io/badge/UI-Gozargah%20Nexus-050816?style=flat-square)](#-رابط-کاربری)
+<sub>بدون سرور · بدون هزینه · بدون وابستگی — کل پنل در یک فایل</sub>
 
-*VLESS + Trojan over WebSocket · Real byte accounting · Beautiful FA/EN RTL panel · Zero runtime dependencies*
+[![Version](https://img.shields.io/badge/version-1.1.0-00D9FF?style=flat-square&labelColor=0B1020)](#-چرا-گذرگاه)
+[![License: MIT](https://img.shields.io/badge/license-MIT-2563EB?style=flat-square&labelColor=0B1020)](LICENSE)
+[![Platform](https://img.shields.io/badge/☁️_Cloudflare_Workers-native-7C3AED?style=flat-square&labelColor=0B1020)](#-چرا-گذرگاه)
+[![Storage](https://img.shields.io/badge/storage-D1_Relational-D946EF?style=flat-square&labelColor=0B1020)](#-معماری)
+[![Protocols](https://img.shields.io/badge/protocols-VLESS_·_Trojan-00D9FF?style=flat-square&labelColor=0B1020)](#-چرا-گذرگاه)
+[![UI](https://img.shields.io/badge/UI-Gozargah_Nexus-7C3AED?style=flat-square&labelColor=0B1020)](#-رابط-کاربری--gozargah-nexus-ui)
+[![Runtime Deps](https://img.shields.io/badge/runtime_deps-zero-22C55E?style=flat-square&labelColor=0B1020)](#-چرا-گذرگاه)
+[![i18n](https://img.shields.io/badge/i18n-FA_·_EN_RTL-2563EB?style=flat-square&labelColor=0B1020)](#-رابط-کاربری--gozargah-nexus-ui)
+
+<img src="docs/divider.svg" width="60%">
 
 </div>
 
----
+**گذرگاه** یک پنل پروکسی چندکاربرهٔ کامل است که به‌صورت بومی روی Cloudflare Workers زندگی می‌کند: یک فایل جاوااسکریپت که همه‌چیز داخلش تعبیه شده — پنل مدیریت، موتور پروکسی، اشتراک‌ساز و تمام دارایی‌های رابط کاربری. نه سرور می‌خواهد، نه نصب، نه هزینه؛ یک اکانت رایگان کلودفلر و پنج دقیقه وقت کافی است تا یک پنل کامل با دیتابیس اختصاصی، داشبورد فارسی/انگلیسی و لینک اشتراک برای هر کاربر داشته باشید.
 
-## ✨ معرفی
+طراحی گذرگاه از روز اول با سه قاعده پیش رفته: **امنیت واقعی به‌جای نمایشی**، **حسابداری دقیق به‌جای تخمین**، و **مستقل بودن مطلق در زمان اجرا**. نتیجه پنلی است که نه به سرویس ثالثی وابسته است، نه اطلاعات شما را از اکانت کلودفلر بیرون می‌برد و نه برای کارکردن به هیچ چیز دیگری نیاز دارد.
 
-**گذرگاه** یک پنل پروکسی کامل روی Cloudflare Workers است که با تمرکز بر **معماری ماژولار**، **امنیت واقعی** و **حسابداری دقیق بایت** طراحی شده و هیچ‌کدام از آنتی‌پترن‌های رایج این حوزه را تکرار نمی‌کند.
+## ✨ چرا گذرگاه؟
 
-## 🧬 معماری ماژولار
+| | | |
+|:---:|---|---|
+| ⚡ | **یک‌فایلی و بدون سرور** | کل محصول در `gozargah-worker.js`؛ هیچ پروسه، کانتینر یا سرور جداگانه‌ای در کار نیست — استقرار یعنی Paste یک فایل |
+| 🛡 | **دو پروتکل، یک دروازه** | **VLESS** و **Trojan** روی WebSocket + TLS با شناسایی خودکار مسیر هر کاربر از روی هاست — بدون نگه‌داشتن وضعیت |
+| 📊 | **حسابداری بایت واقعی** | مصرف up/down هر کاربر از روی طول واقعی chunkها شمرده می‌شود و زنده در کارت او نمایش داده می‌شود — نه تخمین، نه «GB قلابی» |
+| 🗄 | **ذخیره‌سازی رابطه‌ای** | دیتابیس **D1** با جدول‌های مجزا (کاربران / رویدادها / throttle) + کش in-isolate و promise-dedup — نه JSON-blob های شکننده |
+| 🔐 | **امنیت واقعی** | رمز با **PBKDF2-SHA256** (۱۰۰هزار دور، salt تصادفی)، سشن **HMAC امضاشده** با انقضا، rate-limit **ماندگار** در D1 |
+| 🎨 | **Gozargah Nexus UI** | داشبورد شیشه‌ای با تم سینمایی، **RTL کامل**، فارسی/انگلیسی، گرادیان برند و موبایل درجه‌یک |
+| 📡 | **اشتراک‌ساز داخلی** | تولید **Base64 / Clash-Meta / Sing-box** درون خود Worker — بدون سرویس ثالث، با تشخیص خودکار `User-Agent` |
+| 🧩 | **صفر وابستگی رانتایم** | همهٔ دارایی‌های UI تعبیه‌شده‌اند؛ هیچ درخواستی به CDN، QR ثالث یا raw.githubusercontent زده نمی‌شود |
 
-| لایه | پیاده‌سازی در گذرگاه |
-|------|------------------------|
-| ساختار کد | TypeScript ماژولار + build تک‌فایلی |
-| دیتا-پلین | dial مستقیم → زنجیرهٔ fallback پروکسی‌آی‌پی، انتخاب پایدار per-user |
-| ذخیره‌سازی | **D1 رابطه‌ای** (users / events / throttle / kv_store) با کش in-isolate و promise-dedup |
-| حسابداری | **بایت واقعی** از طول chunkها + flush دسته‌ای (coalescing) |
-| چندکاربره | سهمیه بایت، انقضا، فعال/غیرفعال، چرخش اعتبار |
-| امنیت | **PBKDF2-SHA256 (۱۰۰هزار دور)**، سشن HMAC امضاشده با انقضا، rate-limit پایدار در D1 |
-| استتار | هر مسیر ناشناخته → صفحهٔ بی‌ضرر؛ `robots.txt` بسته؛ پنل فقط با مسیر مخفی |
-| اشتراک | تولید کامل درون Worker (بدون subconverter ثالث) — Base64 / Clash-Meta / Sing-box |
-| هدرهای کلاینت | `Subscription-Userinfo` با **عدد واقعی**، نه نمایشی |
+## 🧭 معماری
 
-### چرا گذرگاه متفاوت است؟
+<div align="center">
 
-- ❌ رمز plaintext در KV ندارد → **PBKDF2 با salt تصادفی**
-- ❌ کوکی سشن = هش رمز ندارد → **توکن HMAC با انقضای ۷ روزه** (تغییر رمز، همهٔ سشن‌ها را می‌کُشد)
-- ❌ «GB قلابی» (تعداد کانکشن ÷ ۶۰۰۰) ندارد → **شمارش بایت واقعی up/down**
-- ❌ rate-limit فرّار per-isolate ندارد → **قفل ورود ماندگار در D1**
-- ❌ وابستگی رانتایم به raw.githubusercontent یا سرویس QR ثالث ندارد → **همه‌چیز embed شده**
-- ❌ race در JSON-blob ندارد → **قفل خوش‌بینانه (rev) روی تنظیمات + جدول رابطه‌ای کاربران**
+```mermaid
+flowchart LR
+    C["🖥️ کلاینت<br/><sub>v2rayNG · Hiddify · Streisand · …</sub>"]
+    W["⚡ گذرگاه<br/><sub>دروازهٔ VLESS / Trojan</sub>"]
+    D[("🗄️ D1<br/><sub>کاربران · سشن · تنظیمات</sub>")]
+    I["🌐 مقصد"]
+    P["🛰️ ProxyIP<br/><sub>برای مقصدهای پشت CF</sub>"]
+
+    C -- "WSS · UUID / رمز" --> W
+    W -- "دایرکت" --> I
+    W -.-> P
+    P --> I
+    W <--> D
+
+    classDef node fill:#0B1020,stroke:#3B4C7A,stroke-width:1px,color:#E6F7FF
+    classDef hero fill:#0B1020,stroke:#00D9FF,stroke-width:1.6px,color:#E6F7FF
+    class W hero
+    class C,D,I,P node
+```
+
+</div>
+
+هر اتصال با یک هندشیک سبک در ورکر احراز می‌شود، مسیر کاربر از روی هاست تشخیص داده می‌شود و سپس ترافیک یا مستقیم به مقصد می‌رود یا در صورت نیاز از رلهٔ ProxyIP عبور می‌کند. همهٔ داده‌های پایدار (کاربران، مصرف، سشن‌ها، تنظیمات) در دیتابیس D1 خودتان می‌مانند و ورکر هیچ تله‌متری‌ای به بیرون نمی‌فرستد.
 
 ## 🎨 رابط کاربری — Gozargah Nexus UI
 
-رابط پنل با دیزاین‌سیستم اختصاصی **Gozargah Nexus UI** ساخته شده: تم سینمایی تیره روی `#050816`، گرادیان برند Cyan→Blue→Purple→Magenta، گلس‌مورفیسم ظریف، سایدبار شیشه‌ای ۲۵۰px (در موبایل: دراور با overlay)، تایپوگرافی Inter + Vazirmatn، گرید فیوچریستیک و ذرات بسیار کم‌تراکم در پس‌زمینه.
-
-| ویژگی | جزئیات |
-|--------|--------|
-| چیدمان | سایدبار ثابت دسکتاپ ← دراور کشویی موبایل (کلیک بیرون/Esc می‌بندد) |
-| RTL/LTR | فارسی پیش‌فرض RTL، انگلیسی LTR — سایدبار و توست‌ها با پراپرتی‌های منطقی جابه‌جا می‌شوند |
-| حرکت | ترنزیشن‌های ۱۸۰–۲۵۰ms؛ با `prefers-reduced-motion` همهٔ انیمیشن‌ها غیرفعال می‌شوند |
-| دسترس‌پذیری | حالت فوکوس واضح (`:focus-visible`)، وضعیت‌ها بدون اتکای صرف به رنگ، کنتراست بالا |
-| آیکون‌ها | SVG خطی درون‌سازی‌شده — بدون فونت‌آیکون، بدون درخواست خارجی |
+رابط پنل با دیزاین‌سیستم اختصاصی **Gozargah Nexus UI** ساخته شده: تم سینمایی تیره روی `#050816`، گرادیان برند Cyan→Blue→Purple→Magenta، گلس‌مورفیسم ظریف، تایپوگرافی Inter + Vazirmatn و تجربهٔ موبایل هم‌تراز دسکتاپ.
 
 | داشبورد (فارسی) | کاربران (فارسی) |
 |---|---|
 | ![Dashboard](docs/preview-dashboard.png) | ![Users](docs/preview-users.png) |
 
-| کاربران (انگلیسی) | موبایل (دراور) |
+| کاربران (انگلیسی) | موبایل (دراور شیشه‌ای) |
 |---|---|
 | ![Users EN](docs/preview-users-en.png) | ![Mobile](docs/preview-mobile.png) |
 
-## 📋 پیش‌نیازها
+| عنصر دیزاین | جزئیات |
+|---|---|
+| زمینه | `#050816` — آسمان شب سینمایی |
+| گرادیان برند | `#00D9FF → #2563EB → #7C3AED → #D946EF` |
+| چیدمان | سایدبار شیشه‌ای ثابت در دسکتاپ ← دراور کشویی در موبایل |
+| RTL/LTR | فارسی پیش‌فرض RTL، انگلیسی LTR — جابه‌جایی کامل با پراپرتی‌های منطقی |
+| حرکت | ترنزیشن ۱۸۰–۲۵۰ms؛ با `prefers-reduced-motion` همهٔ انیمیشن‌ها خاموش می‌شوند |
+| دسترس‌پذیری | حالت فوکوس واضح، وضعیت‌ها بدون اتکای صرف به رنگ، کنتراست بالا |
+| آیکون‌ها | SVG خطی درون‌سازی‌شده — بدون فونت‌آیکون و بدون درخواست خارجی |
 
-- یک اکانت Cloudflare (پلن رایگان کافی است)
-- Node.js 18+ (فقط برای نصب با wrangler؛ روش paste نیازی به آن ندارد)
+## 🚀 استقرار در ۵ دقیقه
 
-## 🚀 نصب — دو روش
+فقط یک اکانت Cloudflare لازم است — **پلن رایگان کافی است**. (روش wrangler به Node.js 18+ نیاز دارد؛ روش Paste هیچ ابزاری نمی‌خواهد.)
 
-### روش ۱: Paste در داشبورد (بدون ابزار)
+### روش ۱ — Paste در داشبورد (بدون هیچ ابزاری)
 
 1. فایل آمادهٔ `dist/gozargah-worker.js` را از [Releases](../../releases) بردارید (یا خودتان با `npm run build` بسازید).
 2. در داشبورد Cloudflare: **Workers & Pages → Create → Worker** — نام دلخواه (مثلاً `gozargah`) و Create.
@@ -87,7 +103,7 @@
 
 > تا قبل از اتصال D1، پنل «راهنمای اتصال دیتابیس» را نشان می‌دهد و Worker در حالت بی‌دیتابیس هم پروکسی می‌کند (UUID قطعی از روی هاست).
 
-### روش ۲: wrangler (برای توسعه)
+### روش ۲ — wrangler (برای توسعه)
 
 ```bash
 git clone https://github.com/panelgozargah/gozargah.git
@@ -97,7 +113,7 @@ npx wrangler d1 create gozargah     # database_id را در wrangler.toml جای
 npm run deploy
 ```
 
-به‌روزرسانی خودکار با GitHub Actions: در ریپو (فورک‌شده) دو Secret تعریف کنید — `CLOUDFLARE_API_TOKEN` و `CLOUDFLARE_ACCOUNT_ID` — هر push به main دیپلوی می‌شود.
+> 🔄 **به‌روزرسانی خودکار:** در فورک خودتان دو Secret تعریف کنید — `CLOUDFLARE_API_TOKEN` و `CLOUDFLARE_ACCOUNT_ID` — از این به بعد هر push به `main` خودکار دیپلوی می‌شود.
 
 ## 🔑 ورود اولیه
 
@@ -106,15 +122,15 @@ npm run deploy
 | آدرس پنل | `https://<worker>.workers.dev/gozargah` |
 | رمز عبور | `admin` |
 
-> ⚠️ پنل تا تغییر رمز پیش‌فرض، نوار هشدار زرد نشان می‌دهد. اولین کار: **تنظیمات → رمز جدید**.
+> ⚠️ پنل تا تغییر رمز پیش‌فرض، نوار هشدار زرد نشان می‌دهد. اولین کار بعد از ورود: **تنظیمات → رمز جدید**.
 > مسیر پنل و مسیر اشتراک هم از همان‌جا قابل تغییر است.
 
 ## 👥 کاربران و اشتراک
 
 - هر کاربر: **UUID اختصاصی + رمز Trojan + سهمیه (GB) + تاریخ انقضا + فعال/غیرفعال**
-- مصرف واقعی up/down هر کاربر زنده در کارت او نمایش داده می‌شود (نوار گرادیانی).
-- برای هر کاربر: لینک‌های VLESS/Trojan + QR + سه لینک اشتراک (Base64 / Clash / Sing-box).
-- تشخیص خودکار فرمت اشتراک بر اساس `User-Agent` کلاینت (+ override با `/clash`، `/singbox`، `/v2ray`).
+- مصرف واقعی up/down هر کاربر زنده در کارت او نمایش داده می‌شود (نوار گرادیانی)
+- برای هر کاربر: لینک‌های VLESS/Trojan + QR + سه لینک اشتراک (Base64 / Clash / Sing-box)
+- تشخیص خودکار فرمت اشتراک بر اساس `User-Agent` کلاینت (+ override با `/clash`، `/singbox`، `/v2ray`)
 
 | مسیر | توضیح |
 |------|-------|
@@ -125,7 +141,7 @@ npm run deploy
 | `/gozargah` | پنل (قابل تغییر) |
 | `/healthz` | سلامت Worker |
 
-## ⚙️ متغیرهای قابل تنظیم در پنل
+## ⚙️ تنظیمات پنل
 
 | تنظیم | پیش‌فرض | توضیح |
 |-------|---------|-------|
@@ -134,22 +150,38 @@ npm run deploy
 | مسیر پنل | `gozargah` | مسیر مخفی پنل |
 | رمز عبور | `admin` | حداقل ۸ کاراکتر |
 
-## 📱 کلاینت‌های تست‌شده
+## 📱 کلاینت‌های همخوان
 
 v2rayNG · v2rayN · Streisand · Shadowrocket · Hiddify · Clash-Meta/Stash · Sing-box · Nekobox
 
-## 🔐 نکات امنیتی
+## 🔐 امنیت در معماری
 
-- رمز با PBKDF2-SHA256 و ۱۰۰٬۰۰۰ دور هش می‌شود؛ salt تصادفی ۱۶ بایتی.
-- سشن: HMAC-SHA256 با انقضا — کوکی `HttpOnly; Secure; SameSite=Lax`.
-- ورود: حداکثر ۵ تلاش در ۱۵ دقیقه (ماندگار در D1، بر اساس هش IP).
-- UUID و رمز Trojan هر کاربر قابل چرخش یک‌کلیکه؛ تغییر رمز ادمین کل سشن‌ها را باطل می‌کند.
-- پاسخ همهٔ مسیرهای ناشناخته یک صفحهٔ بی‌اثر است — وجود پنل قابل کشف از رفتار HTTP نیست.
-- تمام دارایی‌های UI داخل خود Worker تعبیه شده؛ هیچ درخواست خارجی‌ای برای رندر پنل زده نمی‌شود.
+- رمز با **PBKDF2-SHA256** و ۱۰۰٬۰۰۰ دور هش می‌شود؛ salt تصادفی ۱۶ بایتی — هیچ رمز plaintext ای در دیتابیس نیست
+- سشن‌ها با **HMAC-SHA256** امضا و ۷ روزه منقضی می‌شوند؛ کوکی `HttpOnly; Secure; SameSite=Lax` — تغییر رمز همهٔ سشن‌ها را باطل می‌کند
+- ورود: حداکثر ۵ تلاش در ۱۵ دقیقه — قفل **ماندگار در D1** (بر اساس هش IP)، نه حافظهٔ فرّار
+- UUID و رمز Trojan هر کاربر با یک کلیک قابل چرخش است
+- پاسخ همهٔ مسیرهای ناشناخته یک صفحهٔ بی‌اثر است — وجود پنل از رفتار HTTP قابل کشف نیست
+- `robots.txt` بسته و همهٔ دارایی‌های UI تعبیه‌شده — هیچ ردی به سرویس ثالث
+
+<details>
+<summary><b>🌐 English</b></summary>
+
+**Gozargah** (Persian for *gateway*) is a complete multi-user proxy panel that runs natively on Cloudflare Workers — the entire product lives in a single JS file: admin dashboard, proxy engine, subscription generator and all UI assets are embedded.
+
+- **Protocols:** VLESS & Trojan over WebSocket + TLS, per-user path detection via host header
+- **Storage:** Cloudflare D1 (relational — users / events / throttle), in-isolate cache, promise-dedup
+- **Accounting:** real byte counting per user (up/down), live usage bars, quotas & expiry
+- **Security:** PBKDF2-SHA256 (100k iterations), HMAC-signed expiring sessions, persistent D1-backed rate limiting
+- **Subscriptions:** Base64 / Clash-Meta / Sing-box generated in-worker, auto `User-Agent` detection
+- **UI:** Gozargah Nexus UI — cinematic dark glassmorphism, full RTL, FA/EN
+
+**Deploy:** grab `dist/gozargah-worker.js` from [Releases](../../releases), paste it into a new Worker, create a D1 database bound as `GZ_DB`, open `https://<worker>.workers.dev/gozargah` — login `admin`. Free plan is enough.
+
+</details>
 
 ## 🛣 نقشهٔ راه
 
-- [ ] Shadowsocks AEAD
+- [ ] Shadowsocks AEAD به‌عنوان پروتکل سوم
 - [ ] فوروارد UDP-DNS (پورت ۵۳) و NAT64
 - [ ] شروع شمارش سهمیه از اولین اتصال + ریست خودکار دوره‌ای
 - [ ] ECH و fragment پریست‌های اپراتورهای ایران
@@ -159,3 +191,11 @@ v2rayNG · v2rayN · Streisand · Shadowrocket · Hiddify · Clash-Meta/Stash ·
 ## 📄 لایسنس
 
 MIT — آزاد برای استفاده، تغییر و توسعه. جزئیات در [LICENSE](LICENSE).
+
+<div align="center">
+
+<img src="docs/divider.svg" width="60%">
+
+<sub><b>گذرگاه</b> — دروازهٔ امن عبور · ساخته‌شده برای سرعت، سادگی و آزادی</sub>
+
+</div>
