@@ -1,7 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" viewBox="0 0 1200 420" role="img" aria-label="Gozargah — secure multi-user proxy panel on Cloudflare Workers">
   <defs>
+    <linearGradient id="brandGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#00D9FF"/>
+      <stop offset="34%" stop-color="#2563EB"/>
+      <stop offset="68%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#D946EF"/>
+    </linearGradient>
+    <linearGradient id="brandGradV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#00D9FF"/>
+      <stop offset="50%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#D946EF"/>
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#C9EFFF"/>
+    </linearGradient>
     <radialGradient id="gCyan" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#00D9FF" stop-opacity="0.30"/>
+      <stop offset="0%" stop-color="#00D9FF" stop-opacity="0.3"/>
       <stop offset="100%" stop-color="#00D9FF" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="gBlue" cx="50%" cy="50%" r="50%">
@@ -12,61 +27,23 @@
       <stop offset="0%" stop-color="#D946EF" stop-opacity="0.22"/>
       <stop offset="100%" stop-color="#D946EF" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="textGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#FFFFFF"/>
-      <stop offset="100%" stop-color="#C9EFFF"/>
-    </linearGradient>
-    <linearGradient id="brandGrad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#00D9FF"/>
-      <stop offset="34%" stop-color="#2563EB"/>
-      <stop offset="68%" stop-color="#7C3AED"/>
-      <stop offset="100%" stop-color="#D946EF"/>
-    </linearGradient>
-    <linearGradient id="pillarGrad" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#00D9FF"/>
-      <stop offset="100%" stop-color="#7C3AED"/>
-    </linearGradient>
-    <linearGradient id="beamGrad" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#00D9FF" stop-opacity="0"/>
-      <stop offset="14%" stop-color="#00D9FF" stop-opacity="0.9"/>
-      <stop offset="50%" stop-color="#E0F7FF" stop-opacity="1"/>
-      <stop offset="86%" stop-color="#D946EF" stop-opacity="0.9"/>
-      <stop offset="100%" stop-color="#D946EF" stop-opacity="0"/>
-    </linearGradient>
-    <linearGradient id="frameGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#00D9FF" stop-opacity="0.65"/>
-      <stop offset="100%" stop-color="#D946EF" stop-opacity="0.65"/>
-    </linearGradient>
-    <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse">
-      <circle cx="1.2" cy="1.2" r="1.1" fill="#3B4C7A"/>
-    </pattern>
     <filter id="blurL" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="16"/>
+      <feGaussianBlur stdDeviation="14"/>
     </filter>
     <filter id="blurS" x="-60%" y="-60%" width="220%" height="220%">
-      <feGaussianBlur stdDeviation="4"/>
+      <feGaussianBlur stdDeviation="3.5"/>
     </filter>
-    <filter id="wmGlow" x="-30%" y="-60%" width="160%" height="220%">
-      <feDropShadow dx="0" dy="0" stdDeviation="14" flood-color="#38BDF8" flood-opacity="0.38"/>
+    <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#38BDF8"
+                    flood-opacity="0.38"/>
     </filter>
-    <radialGradient id="fadeMask" cx="50%" cy="50%" r="72%">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.16"/>
-      <stop offset="70%" stop-color="#FFFFFF" stop-opacity="0.05"/>
-      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
-    </radialGradient>
-    <mask id="dotMask">
-      <rect width="1200" height="420" fill="url(#fadeMask)"/>
-    </mask>
+    
   </defs>
-
-  <!-- deep space -->
   <rect width="1200" height="420" fill="#050816"/>
   <ellipse cx="290" cy="105" rx="430" ry="240" fill="url(#gCyan)"/>
   <ellipse cx="940" cy="320" rx="470" ry="250" fill="url(#gBlue)"/>
   <ellipse cx="600" cy="430" rx="380" ry="200" fill="url(#gMag)"/>
-  <rect width="1200" height="420" fill="url(#dots)" mask="url(#dotMask)"/>
 
-  <!-- particles -->
   <circle cx="852" cy="115" r="0.8" fill="#7DD3FC" opacity="0.21"/>
   <circle cx="414" cy="329" r="0.7" fill="#FFFFFF" opacity="0.18"/>
   <circle cx="136" cy="168" r="1.6" fill="#A5B4FC" opacity="0.18"/>
@@ -187,36 +164,32 @@
   <circle cx="188" cy="112" r="1.0" fill="#A5B4FC" opacity="0.21"/>
   <circle cx="1176" cy="396" r="1.0" fill="#7DD3FC" opacity="0.14"/>
   <circle cx="955" cy="382" r="1.2" fill="#A5B4FC" opacity="0.23"/>
-  <path d="M 246 105 H 255 M 250 101 V 110" stroke="#67E8F9" stroke-width="1" stroke-linecap="round" opacity="0.43"/>
-  <path d="M 211 136 H 222 M 217 130 V 142" stroke="#67E8F9" stroke-width="1" stroke-linecap="round" opacity="0.60"/>
-  <path d="M 494 101 H 501 M 497 97 V 105" stroke="#67E8F9" stroke-width="1" stroke-linecap="round" opacity="0.59"/>
-  <path d="M 321 89 H 333 M 327 83 V 95" stroke="#67E8F9" stroke-width="1" stroke-linecap="round" opacity="0.53"/>
-  <path d="M 260 59 H 273 M 267 53 V 66" stroke="#67E8F9" stroke-width="1" stroke-linecap="round" opacity="0.35"/>
-  <path d="M 104 135 H 115 M 110 129 V 140" stroke="#67E8F9" stroke-width="1" stroke-linecap="round" opacity="0.46"/>
-  <path d="M 725 116 H 733 M 729 112 V 120" stroke="#67E8F9" stroke-width="1" stroke-linecap="round" opacity="0.49"/>
+  <path d="M 246 105 H 255 M 250 101 V 110" stroke="#A5B4FC" stroke-width="1" stroke-linecap="round" opacity="0.32"/>
+  <path d="M 211 136 H 222 M 217 130 V 142" stroke="#A5B4FC" stroke-width="1" stroke-linecap="round" opacity="0.46"/>
+  <path d="M 494 101 H 501 M 497 97 V 105" stroke="#A5B4FC" stroke-width="1" stroke-linecap="round" opacity="0.46"/>
+  <path d="M 321 89 H 333 M 327 83 V 95" stroke="#A5B4FC" stroke-width="1" stroke-linecap="round" opacity="0.41"/>
+  <path d="M 260 59 H 273 M 267 53 V 66" stroke="#A5B4FC" stroke-width="1" stroke-linecap="round" opacity="0.25"/>
+  <path d="M 104 135 H 115 M 110 129 V 140" stroke="#A5B4FC" stroke-width="1" stroke-linecap="round" opacity="0.34"/>
+  <path d="M 725 116 H 733 M 729 112 V 120" stroke="#A5B4FC" stroke-width="1" stroke-linecap="round" opacity="0.37"/>
 
-  <!-- the light beam passing through the gate -->
-  <rect x="0" y="209" width="1200" height="10" fill="url(#beamGrad)" opacity="0.35" filter="url(#blurS)"/>
-  <rect x="0" y="212.8" width="1200" height="2.4" fill="url(#beamGrad)">
+  <rect x="0" y="209" width="1200" height="10" fill="url(#brandGrad)" opacity="0.35" filter="url(#blurS)"/>
+  <rect x="0" y="212.8" width="1200" height="2.4" fill="url(#brandGrad)">
     <animate attributeName="opacity" values="0.82;1;0.82" dur="3.2s" repeatCount="indefinite"/>
   </rect>
 
-  <!-- gate arch -->
   <path d="M 172 196 A 428 148 0 0 1 1028 196" fill="none" stroke="url(#brandGrad)" stroke-width="2.4" opacity="0.55"/>
   <path d="M 172 196 A 428 148 0 0 1 1028 196" fill="none" stroke="#BFEFFF" stroke-width="2.4"
         stroke-dasharray="3 26" stroke-linecap="round" opacity="0.9">
     <animate attributeName="stroke-dashoffset" from="0" to="-116" dur="6.5s" repeatCount="indefinite"/>
   </path>
 
-  <!-- pillars -->
-  <rect x="165" y="118" width="14" height="214" rx="7" fill="url(#pillarGrad)" opacity="0.28" filter="url(#blurL)"/>
-  <rect x="1021" y="118" width="14" height="214" rx="7" fill="url(#pillarGrad)" opacity="0.28" filter="url(#blurL)"/>
-  <rect x="166" y="118" width="12" height="214" rx="6" fill="url(#pillarGrad)" opacity="0.92"/>
-  <rect x="1022" y="118" width="12" height="214" rx="6" fill="url(#pillarGrad)" opacity="0.92"/>
+  <rect x="165" y="118" width="14" height="214" rx="7" fill="url(#brandGradV)" opacity="0.28" filter="url(#blurL)"/>
+  <rect x="1021" y="118" width="14" height="214" rx="7" fill="url(#brandGradV)" opacity="0.28" filter="url(#blurL)"/>
+  <rect x="166" y="118" width="12" height="214" rx="6" fill="url(#brandGradV)" opacity="0.92"/>
+  <rect x="1022" y="118" width="12" height="214" rx="6" fill="url(#brandGradV)" opacity="0.92"/>
   <rect x="170.6" y="128" width="2.8" height="194" rx="1.4" fill="#FFFFFF" opacity="0.55"/>
   <rect x="1026.6" y="128" width="2.8" height="194" rx="1.4" fill="#FFFFFF" opacity="0.55"/>
 
-  <!-- pillar cap diamonds -->
   <g transform="translate(172,104) rotate(45)">
     <rect x="-6" y="-6" width="12" height="12" rx="2" fill="url(#brandGrad)">
       <animate attributeName="opacity" values="0.55;1;0.55" dur="2.8s" repeatCount="indefinite"/>
@@ -228,13 +201,12 @@
     </rect>
   </g>
 
-  <!-- wordmark -->
-  <path transform="translate(438.72,250.00) scale(0.062500,-0.062500)" d="M284.0 789.0 244.0 824.0 424.0 1054.0Q512.0 985.0 602.0 913.5Q692.0 842.0 768.0 763.5Q844.0 685.0 890.5 596.5Q937.0 508.0 937.0 407.0Q937.0 281.0 881.5 191.0Q826.0 101.0 729.0 52.5Q632.0 4.0 508.0 4.0Q295.0 4.0 186.5 108.5Q78.0 213.0 78.0 370.0Q78.0 498.0 139.0 594.5Q200.0 691.0 284.0 789.0ZM666.0 404.0Q666.0 433.0 638.5 470.5Q611.0 508.0 571.5 544.5Q532.0 581.0 496.0 606.0Q466.0 580.0 432.0 542.5Q398.0 505.0 374.0 466.5Q350.0 428.0 350.0 398.0Q350.0 354.0 393.5 332.0Q437.0 310.0 507.0 310.0Q583.0 310.0 624.5 332.5Q666.0 355.0 666.0 404.0Z" fill="url(#textGrad)" filter="url(#wmGlow)"/>
-  <path transform="translate(502.16,250.00) scale(0.062500,-0.062500)" d="M133.0 1407.0H422.0V501.0Q422.0 401.0 448.5 355.5Q475.0 310.0 571.0 310.0H596.0V0.0H571.0Q341.0 0.0 237.0 118.5Q133.0 237.0 133.0 472.0Z" fill="url(#textGrad)" filter="url(#wmGlow)"/>
-  <path transform="translate(538.16,250.00) scale(0.062500,-0.062500)" d="M52.0 1195.0V1355.0L875.0 1690.0V1530.0ZM366.0 915.0Q503.0 836.0 602.5 762.5Q702.0 689.0 755.5 605.0Q809.0 521.0 809.0 410.0Q809.0 246.0 734.0 157.0Q659.0 68.0 527.0 34.0Q395.0 0.0 224.0 0.0H-20.0V310.0H223.0Q376.0 310.0 455.5 330.0Q535.0 350.0 535.0 414.0Q535.0 441.0 485.5 480.5Q436.0 520.0 362.5 566.0Q289.0 612.0 213.5 657.0Q138.0 702.0 86.0 739.0Q43.0 770.0 20.0 822.5Q-3.0 875.0 -3.0 930.0Q-3.0 989.0 24.0 1041.0Q51.0 1093.0 107.0 1115.0L889.0 1434.0V1127.0Z" fill="url(#textGrad)" filter="url(#wmGlow)"/>
-  <path transform="translate(584.97,250.00) scale(0.062500,-0.062500)" d="M48.0 -547.0 -62.0 -259.0Q79.0 -228.0 185.5 -181.0Q292.0 -134.0 351.0 -50.5Q410.0 33.0 410.0 172.0Q410.0 264.0 379.5 381.5Q349.0 499.0 316.0 597.0L605.0 691.0Q645.0 579.0 666.0 448.5Q687.0 318.0 687.0 198.0Q687.0 -20.0 606.0 -172.5Q525.0 -325.0 381.0 -417.0Q237.0 -509.0 48.0 -547.0Z" fill="url(#textGrad)" filter="url(#wmGlow)"/>
-  <path transform="translate(632.59,250.00) scale(0.062500,-0.062500)" d="M535.0 1594.0 722.0 1407.0 535.0 1221.0 349.0 1407.0ZM648.0 445.0Q648.0 470.0 636.5 510.5Q625.0 551.0 614.0 576.0L413.0 1020.0L666.0 1144.0L919.0 562.0Q946.0 501.0 967.5 443.0Q989.0 385.0 1019.0 347.5Q1049.0 310.0 1098.0 310.0H1140.0V0.0H1098.0Q986.0 0.0 915.5 42.5Q845.0 85.0 794.0 148.0Q717.0 78.0 613.0 39.5Q509.0 1.0 362.0 1.0Q271.0 1.0 208.5 7.0Q146.0 13.0 79.0 29.0V339.0Q141.0 324.0 213.5 315.5Q286.0 307.0 347.0 307.0Q412.0 307.0 481.5 318.0Q551.0 329.0 599.5 359.0Q648.0 389.0 648.0 445.0Z" fill="url(#textGrad)" filter="url(#wmGlow)"/>
-  <path transform="translate(702.59,250.00) scale(0.062500,-0.062500)" d="M52.0 1195.0V1355.0L875.0 1690.0V1530.0ZM366.0 915.0Q503.0 836.0 602.5 762.5Q702.0 689.0 755.5 605.0Q809.0 521.0 809.0 410.0Q809.0 246.0 734.0 157.0Q659.0 68.0 527.0 34.0Q395.0 0.0 224.0 0.0H-20.0V310.0H223.0Q376.0 310.0 455.5 330.0Q535.0 350.0 535.0 414.0Q535.0 441.0 485.5 480.5Q436.0 520.0 362.5 566.0Q289.0 612.0 213.5 657.0Q138.0 702.0 86.0 739.0Q43.0 770.0 20.0 822.5Q-3.0 875.0 -3.0 930.0Q-3.0 989.0 24.0 1041.0Q51.0 1093.0 107.0 1115.0L889.0 1434.0V1127.0Z" fill="url(#textGrad)" filter="url(#wmGlow)"/>
+  <path transform="translate(438.72,250.00) scale(0.062500,-0.062500)" d="M284.0 789.0 244.0 824.0 424.0 1054.0Q512.0 985.0 602.0 913.5Q692.0 842.0 768.0 763.5Q844.0 685.0 890.5 596.5Q937.0 508.0 937.0 407.0Q937.0 281.0 881.5 191.0Q826.0 101.0 729.0 52.5Q632.0 4.0 508.0 4.0Q295.0 4.0 186.5 108.5Q78.0 213.0 78.0 370.0Q78.0 498.0 139.0 594.5Q200.0 691.0 284.0 789.0ZM666.0 404.0Q666.0 433.0 638.5 470.5Q611.0 508.0 571.5 544.5Q532.0 581.0 496.0 606.0Q466.0 580.0 432.0 542.5Q398.0 505.0 374.0 466.5Q350.0 428.0 350.0 398.0Q350.0 354.0 393.5 332.0Q437.0 310.0 507.0 310.0Q583.0 310.0 624.5 332.5Q666.0 355.0 666.0 404.0Z" fill="url(#textGrad)" filter="url(#softGlow)"/>
+  <path transform="translate(502.16,250.00) scale(0.062500,-0.062500)" d="M133.0 1407.0H422.0V501.0Q422.0 401.0 448.5 355.5Q475.0 310.0 571.0 310.0H596.0V0.0H571.0Q341.0 0.0 237.0 118.5Q133.0 237.0 133.0 472.0Z" fill="url(#textGrad)" filter="url(#softGlow)"/>
+  <path transform="translate(538.16,250.00) scale(0.062500,-0.062500)" d="M52.0 1195.0V1355.0L875.0 1690.0V1530.0ZM366.0 915.0Q503.0 836.0 602.5 762.5Q702.0 689.0 755.5 605.0Q809.0 521.0 809.0 410.0Q809.0 246.0 734.0 157.0Q659.0 68.0 527.0 34.0Q395.0 0.0 224.0 0.0H-20.0V310.0H223.0Q376.0 310.0 455.5 330.0Q535.0 350.0 535.0 414.0Q535.0 441.0 485.5 480.5Q436.0 520.0 362.5 566.0Q289.0 612.0 213.5 657.0Q138.0 702.0 86.0 739.0Q43.0 770.0 20.0 822.5Q-3.0 875.0 -3.0 930.0Q-3.0 989.0 24.0 1041.0Q51.0 1093.0 107.0 1115.0L889.0 1434.0V1127.0Z" fill="url(#textGrad)" filter="url(#softGlow)"/>
+  <path transform="translate(584.97,250.00) scale(0.062500,-0.062500)" d="M48.0 -547.0 -62.0 -259.0Q79.0 -228.0 185.5 -181.0Q292.0 -134.0 351.0 -50.5Q410.0 33.0 410.0 172.0Q410.0 264.0 379.5 381.5Q349.0 499.0 316.0 597.0L605.0 691.0Q645.0 579.0 666.0 448.5Q687.0 318.0 687.0 198.0Q687.0 -20.0 606.0 -172.5Q525.0 -325.0 381.0 -417.0Q237.0 -509.0 48.0 -547.0Z" fill="url(#textGrad)" filter="url(#softGlow)"/>
+  <path transform="translate(632.59,250.00) scale(0.062500,-0.062500)" d="M535.0 1594.0 722.0 1407.0 535.0 1221.0 349.0 1407.0ZM648.0 445.0Q648.0 470.0 636.5 510.5Q625.0 551.0 614.0 576.0L413.0 1020.0L666.0 1144.0L919.0 562.0Q946.0 501.0 967.5 443.0Q989.0 385.0 1019.0 347.5Q1049.0 310.0 1098.0 310.0H1140.0V0.0H1098.0Q986.0 0.0 915.5 42.5Q845.0 85.0 794.0 148.0Q717.0 78.0 613.0 39.5Q509.0 1.0 362.0 1.0Q271.0 1.0 208.5 7.0Q146.0 13.0 79.0 29.0V339.0Q141.0 324.0 213.5 315.5Q286.0 307.0 347.0 307.0Q412.0 307.0 481.5 318.0Q551.0 329.0 599.5 359.0Q648.0 389.0 648.0 445.0Z" fill="url(#textGrad)" filter="url(#softGlow)"/>
+  <path transform="translate(702.59,250.00) scale(0.062500,-0.062500)" d="M52.0 1195.0V1355.0L875.0 1690.0V1530.0ZM366.0 915.0Q503.0 836.0 602.5 762.5Q702.0 689.0 755.5 605.0Q809.0 521.0 809.0 410.0Q809.0 246.0 734.0 157.0Q659.0 68.0 527.0 34.0Q395.0 0.0 224.0 0.0H-20.0V310.0H223.0Q376.0 310.0 455.5 330.0Q535.0 350.0 535.0 414.0Q535.0 441.0 485.5 480.5Q436.0 520.0 362.5 566.0Q289.0 612.0 213.5 657.0Q138.0 702.0 86.0 739.0Q43.0 770.0 20.0 822.5Q-3.0 875.0 -3.0 930.0Q-3.0 989.0 24.0 1041.0Q51.0 1093.0 107.0 1115.0L889.0 1434.0V1127.0Z" fill="url(#textGrad)" filter="url(#softGlow)"/>
   <path transform="translate(438.72,318.00) scale(0.015137,-0.015137)" d="M1302.0 778.0V180.0Q1265.0 139.0 1188.5 92.5Q1112.0 46.0 996.0 13.0Q880.0 -20.0 723.0 -20.0Q530.0 -20.0 385.5 62.5Q241.0 145.0 161.5 303.0Q82.0 461.0 82.0 687.0V768.0Q82.0 995.0 162.0 1153.0Q242.0 1311.0 382.5 1394.0Q523.0 1477.0 704.0 1477.0Q905.0 1477.0 1031.0 1413.5Q1157.0 1350.0 1222.0 1238.5Q1287.0 1127.0 1301.0 981.0H964.0Q948.0 1089.0 893.0 1148.0Q838.0 1207.0 716.0 1207.0Q589.0 1207.0 514.0 1098.5Q439.0 990.0 439.0 770.0V687.0Q439.0 469.0 513.5 359.5Q588.0 250.0 748.0 250.0Q832.0 250.0 880.5 270.5Q929.0 291.0 951.0 311.0V537.0H707.0V778.0Z" fill="url(#brandGrad)" />
   <path transform="translate(482.12,318.00) scale(0.015137,-0.015137)" d="M1343.0 757.0V698.0Q1343.0 475.0 1262.0 314.5Q1181.0 154.0 1037.5 67.0Q894.0 -20.0 708.0 -20.0Q521.0 -20.0 377.0 67.0Q233.0 154.0 151.5 314.5Q70.0 475.0 70.0 698.0V757.0Q70.0 980.0 151.0 1141.0Q232.0 1302.0 375.5 1389.0Q519.0 1476.0 706.0 1476.0Q892.0 1476.0 1036.0 1389.0Q1180.0 1302.0 1261.5 1141.0Q1343.0 980.0 1343.0 757.0ZM987.0 698.0V759.0Q987.0 975.0 913.5 1088.0Q840.0 1201.0 706.0 1201.0Q567.0 1201.0 497.0 1088.0Q427.0 975.0 427.0 759.0V698.0Q427.0 484.0 498.0 369.0Q569.0 254.0 708.0 254.0Q842.0 254.0 914.5 369.0Q987.0 484.0 987.0 698.0Z" fill="url(#brandGrad)" />
   <path transform="translate(525.45,318.00) scale(0.015137,-0.015137)" d="M1201.0 270.0V0.0H67.0V185.0L762.0 1185.0H62.0V1456.0H1194.0V1276.0L506.0 270.0Z" fill="url(#brandGrad)" />
@@ -288,14 +260,12 @@
   <path transform="translate(916.52,354.00) scale(0.007568,-0.007568)" d="M979.0 0.0 685.0 562.0H399.0V0.0H148.0V1456.0H663.0Q911.0 1456.0 1049.5 1344.0Q1188.0 1232.0 1188.0 1018.0Q1188.0 870.0 1116.0 770.5Q1044.0 671.0 919.0 620.0L1247.0 13.0V0.0ZM663.0 1256.0H399.0V761.0H667.0Q802.0 761.0 870.0 830.5Q938.0 900.0 938.0 1006.0Q938.0 1120.0 871.0 1188.0Q804.0 1256.0 663.0 1256.0Z" fill="#7C89AD" />
   <path transform="translate(930.88,354.00) scale(0.007568,-0.007568)" d="M914.0 375.0Q914.0 435.0 888.5 478.0Q863.0 521.0 795.5 557.0Q728.0 593.0 601.0 632.0Q463.0 674.0 354.5 731.5Q246.0 789.0 183.0 872.5Q120.0 956.0 120.0 1075.0Q120.0 1193.0 185.5 1283.0Q251.0 1373.0 368.0 1424.5Q485.0 1476.0 639.0 1476.0Q802.0 1476.0 919.0 1416.0Q1036.0 1356.0 1099.5 1255.0Q1163.0 1154.0 1163.0 1032.0H914.0Q914.0 1139.0 845.0 1209.0Q776.0 1279.0 636.0 1279.0Q502.0 1279.0 436.5 1220.0Q371.0 1161.0 371.0 1075.0Q371.0 993.0 448.0 938.5Q525.0 884.0 685.0 837.0Q927.0 766.0 1046.5 659.0Q1166.0 552.0 1166.0 377.0Q1166.0 254.0 1101.5 165.0Q1037.0 76.0 920.5 28.0Q804.0 -20.0 647.0 -20.0Q542.0 -20.0 440.5 8.5Q339.0 37.0 256.0 94.0Q173.0 151.0 124.0 237.5Q75.0 324.0 75.0 440.0H326.0Q326.0 346.0 369.0 288.0Q412.0 230.0 485.0 203.0Q558.0 176.0 647.0 176.0Q779.0 176.0 846.5 231.0Q914.0 286.0 914.0 375.0Z" fill="#7C89AD" />
 
-  <!-- baseline ornament -->
   <line x1="120" y1="392" x2="1080" y2="392" stroke="url(#brandGrad)" stroke-width="1" opacity="0.35"/>
   <g transform="translate(600,392) rotate(45)">
     <rect x="-4.5" y="-4.5" width="9" height="9" rx="1.5" fill="url(#brandGrad)"/>
   </g>
 
-  <!-- frame + HUD corners -->
-  <rect x="10" y="10" width="1180" height="400" rx="20" fill="none" stroke="url(#frameGrad)" stroke-width="1.2" opacity="0.5"/>
+  <rect x="10" y="10" width="1180" height="400" rx="20" fill="none" stroke="url(#brandGrad)" stroke-width="1.2" opacity="0.5"/>
   <path d="M 64 10 L 30 10 Q 10 10 10 30 L 10 64" fill="none" stroke="url(#brandGrad)" stroke-width="2.6" stroke-linecap="round"/>
   <path d="M 1136 10 L 1170 10 Q 1190 10 1190 30 L 1190 64" fill="none" stroke="url(#brandGrad)" stroke-width="2.6" stroke-linecap="round"/>
   <path d="M 64 410 L 30 410 Q 10 410 10 390 L 10 356" fill="none" stroke="url(#brandGrad)" stroke-width="2.6" stroke-linecap="round"/>

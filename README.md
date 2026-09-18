@@ -1,6 +1,9 @@
 <div align="center">
 
-<img src="docs/hero.svg" alt="گذرگاه — Gozargah · دروازهٔ امن عبور روی Cloudflare Workers" width="100%">
+<picture>
+  <source media="(prefers-color-scheme: light)" srcset="docs/hero-light.svg">
+  <img src="docs/hero.svg" alt="گذرگاه — Gozargah · دروازهٔ امن عبور روی Cloudflare Workers" width="100%">
+</picture>
 
 # گذرگاه · Gozargah
 
@@ -11,11 +14,16 @@
 [![Version](https://img.shields.io/badge/version-1.1.0-00D9FF?style=flat-square&labelColor=0B1020)](#-چرا-گذرگاه)
 [![License: MIT](https://img.shields.io/badge/license-MIT-2563EB?style=flat-square&labelColor=0B1020)](LICENSE)
 [![Platform](https://img.shields.io/badge/☁️_Cloudflare_Workers-native-7C3AED?style=flat-square&labelColor=0B1020)](#-چرا-گذرگاه)
-[![Storage](https://img.shields.io/badge/storage-D1_Relational-D946EF?style=flat-square&labelColor=0B1020)](#-معماری)
+[![Storage](https://img.shields.io/badge/storage-D1_Relational-D946EF?style=flat-square&labelColor=0B1020)](#-سفر-یک-درخواست)
 [![Protocols](https://img.shields.io/badge/protocols-VLESS_·_Trojan-00D9FF?style=flat-square&labelColor=0B1020)](#-چرا-گذرگاه)
 [![UI](https://img.shields.io/badge/UI-Gozargah_Nexus-7C3AED?style=flat-square&labelColor=0B1020)](#-رابط-کاربری--gozargah-nexus-ui)
 [![Runtime Deps](https://img.shields.io/badge/runtime_deps-zero-22C55E?style=flat-square&labelColor=0B1020)](#-چرا-گذرگاه)
 [![i18n](https://img.shields.io/badge/i18n-FA_·_EN_RTL-2563EB?style=flat-square&labelColor=0B1020)](#-رابط-کاربری--gozargah-nexus-ui)
+
+<picture>
+  <source media="(prefers-color-scheme: light)" srcset="docs/stats-light.svg">
+  <img src="docs/stats-dark.svg" alt="یک فایل · صفر وابستگی · دو پروتکل · صد درصد رایگان" width="100%">
+</picture>
 
 <img src="docs/divider.svg" width="60%">
 
@@ -27,40 +35,25 @@
 
 ## ✨ چرا گذرگاه؟
 
-| | | |
-|:---:|---|---|
-| ⚡ | **یک‌فایلی و بدون سرور** | کل محصول در `gozargah-worker.js`؛ هیچ پروسه، کانتینر یا سرور جداگانه‌ای در کار نیست — استقرار یعنی Paste یک فایل |
-| 🛡 | **دو پروتکل، یک دروازه** | **VLESS** و **Trojan** روی WebSocket + TLS با شناسایی خودکار مسیر هر کاربر از روی هاست — بدون نگه‌داشتن وضعیت |
-| 📊 | **حسابداری بایت واقعی** | مصرف up/down هر کاربر از روی طول واقعی chunkها شمرده می‌شود و زنده در کارت او نمایش داده می‌شود — نه تخمین، نه «GB قلابی» |
-| 🗄 | **ذخیره‌سازی رابطه‌ای** | دیتابیس **D1** با جدول‌های مجزا (کاربران / رویدادها / throttle) + کش in-isolate و promise-dedup — نه JSON-blob های شکننده |
-| 🔐 | **امنیت واقعی** | رمز با **PBKDF2-SHA256** (۱۰۰هزار دور، salt تصادفی)، سشن **HMAC امضاشده** با انقضا، rate-limit **ماندگار** در D1 |
-| 🎨 | **Gozargah Nexus UI** | داشبورد شیشه‌ای با تم سینمایی، **RTL کامل**، فارسی/انگلیسی، گرادیان برند و موبایل درجه‌یک |
-| 📡 | **اشتراک‌ساز داخلی** | تولید **Base64 / Clash-Meta / Sing-box** درون خود Worker — بدون سرویس ثالث، با تشخیص خودکار `User-Agent` |
-| 🧩 | **صفر وابستگی رانتایم** | همهٔ دارایی‌های UI تعبیه‌شده‌اند؛ هیچ درخواستی به CDN، QR ثالث یا raw.githubusercontent زده نمی‌شود |
+<div align="center">
 
-## 🧭 معماری
+<picture>
+  <source media="(prefers-color-scheme: light)" srcset="docs/features-light.svg">
+  <img src="docs/features-dark.svg" alt="هشت ویژگی کلیدی گذرگاه — از یک‌فایلی بودن تا صفر وابستگی رانتایم" width="100%">
+</picture>
+
+</div>
+
+ایدهٔ پشت این هشت کارت ساده است: هر چیزی که می‌تواند یک وابستگی، یک سرور یا یک نقطهٔ شکست باشد، حذف شده. پنل به هیچ CDNای برای دارایی‌هایش درخواست نمی‌زند، مصرف را تخمین نمی‌زند و امنیت را به ظاهر رابط کاربری گره نمی‌زند. نتیجه، پنلی است که همین امروز Paste می‌کنید و کار می‌کند — و فردا هم بدون هیچ به‌روزرسانی اجباری کار می‌کند.
+
+## 🧭 سفر یک درخواست
 
 <div align="center">
 
-```mermaid
-flowchart LR
-    C["🖥️ کلاینت<br/><sub>v2rayNG · Hiddify · Streisand · …</sub>"]
-    W["⚡ گذرگاه<br/><sub>دروازهٔ VLESS / Trojan</sub>"]
-    D[("🗄️ D1<br/><sub>کاربران · سشن · تنظیمات</sub>")]
-    I["🌐 مقصد"]
-    P["🛰️ ProxyIP<br/><sub>برای مقصدهای پشت CF</sub>"]
-
-    C -- "WSS · UUID / رمز" --> W
-    W -- "دایرکت" --> I
-    W -.-> P
-    P --> I
-    W <--> D
-
-    classDef node fill:#0B1020,stroke:#3B4C7A,stroke-width:1px,color:#E6F7FF
-    classDef hero fill:#0B1020,stroke:#00D9FF,stroke-width:1.6px,color:#E6F7FF
-    class W hero
-    class C,D,I,P node
-```
+<picture>
+  <source media="(prefers-color-scheme: light)" srcset="docs/pipeline-light.svg">
+  <img src="docs/pipeline-dark.svg" alt="سفر یک درخواست در گذرگاه — کلاینت، لبهٔ کلودفلر، دروازه، D1 و مقصد" width="100%">
+</picture>
 
 </div>
 
@@ -89,6 +82,15 @@ flowchart LR
 | آیکون‌ها | SVG خطی درون‌سازی‌شده — بدون فونت‌آیکون و بدون درخواست خارجی |
 
 ## 🚀 استقرار در ۵ دقیقه
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: light)" srcset="docs/terminal-light.svg">
+  <img src="docs/terminal-dark.svg" alt="استقرار گذرگاه در سه دستور — wrangler d1 create و npm run deploy" width="92%">
+</picture>
+
+</div>
 
 فقط یک اکانت Cloudflare لازم است — **پلن رایگان کافی است**. (روش wrangler به Node.js 18+ نیاز دارد؛ روش Paste هیچ ابزاری نمی‌خواهد.)
 
