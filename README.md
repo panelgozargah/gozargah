@@ -14,7 +14,7 @@
 [![Release](https://img.shields.io/github/v/release/panelgozargah/gozargah?style=flat-square&labelColor=0B1020&color=00D9FF)](https://github.com/panelgozargah/gozargah/releases/latest)
 [![License: MIT](https://img.shields.io/badge/license-MIT-2563EB?style=flat-square&labelColor=0B1020)](LICENSE)
 [![Deploy](https://img.shields.io/github/actions/workflow/status/panelgozargah/gozargah/deploy.yml?branch=main&style=flat-square&labelColor=0B1020&label=deploy)](https://github.com/panelgozargah/gozargah/actions/workflows/deploy.yml)
-[![Website](https://img.shields.io/website?url=https%3A%2F%2Fpanelgozargah.github.io%2Fgozargah%2F&style=flat-square&labelColor=0B1020&up_color=7C3AED)](https://panelgozargah.github.io/gozargah/)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fgozargah.dpdns.org%2F&style=flat-square&labelColor=0B1020&up_color=7C3AED)](https://gozargah.dpdns.org/)
 [![Platform](https://img.shields.io/badge/☁️_Cloudflare_Workers-native-7C3AED?style=flat-square&labelColor=0B1020)](#-چرا-گذرگاه)
 [![Storage](https://img.shields.io/badge/storage-D1_Relational-D946EF?style=flat-square&labelColor=0B1020)](#-سفر-یک-درخواست)
 [![Protocols](https://img.shields.io/badge/protocols-VLESS_·_Trojan-00D9FF?style=flat-square&labelColor=0B1020)](#-چرا-گذرگاه)
