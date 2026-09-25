@@ -6,7 +6,7 @@
  * unlike nahan whose "GB" is actually connections/6000.
  */
 
-import { DEFAULTS } from '../config';
+import { DEFAULTS, ResetCycle, resetCycleMs } from '../config';
 import { ensureSchema, invalidateCache } from './store';
 import { sha224Hex } from '../utils/sha224';
 
@@ -18,7 +18,10 @@ export interface GzUser {
   quotaBytes: number; // 0 = unlimited
   usedUp: number;
   usedDown: number;
-  expiryAt: number; // epoch ms, 0 = never
+  expiryAt: number; // epoch ms, 0 = never (absolute mode)
+  expiryDays: number; // > 0 = days from FIRST connection (first-use mode)
+  firstUsedAt: number; // epoch ms of the first allowed proxy connection (0 = not started)
+  resetAnchor: number; // rolling quota-reset window anchor (0 = starts with first use)
   enabled: boolean;
   isAdmin: boolean;
   createdAt: number;
@@ -30,6 +33,7 @@ interface UserRow {
   quota_bytes: number; used_up: number; used_down: number;
   expiry_at: number; enabled: number; is_admin: number;
   created_at: number; last_seen: number;
+  first_used_at: number; expiry_days: number; reset_anchor: number;
 }
 
 function toUser(r: UserRow): GzUser {
@@ -38,6 +42,7 @@ function toUser(r: UserRow): GzUser {
     quotaBytes: r.quota_bytes, usedUp: r.used_up, usedDown: r.used_down,
     expiryAt: r.expiry_at, enabled: r.enabled === 1, isAdmin: r.is_admin === 1,
     createdAt: r.created_at, lastSeen: r.last_seen,
+    firstUsedAt: r.first_used_at || 0, expiryDays: r.expiry_days || 0, resetAnchor: r.reset_anchor || 0,
   };
 }
 
@@ -81,16 +86,74 @@ export async function findUserByTrojanHash(db: D1Database, hashHex: string): Pro
   return null;
 }
 
+/**
+ * Effective expiry (epoch ms, 0 = none):
+ *  - expiryDays > 0 (first-use mode): clock starts at the FIRST allowed connection
+ *    — a user who never connected has no expiry yet ("not started")
+ *  - otherwise: absolute expiryAt
+ */
+export function effectiveExpiry(u: Pick<GzUser, 'expiryAt' | 'expiryDays' | 'firstUsedAt'>, now = Date.now()): number {
+  if (u.expiryDays > 0) {
+    if (!u.firstUsedAt) return 0; // not started — nothing expired
+    return u.firstUsedAt + u.expiryDays * 86_400_000;
+  }
+  return u.expiryAt || 0;
+}
+
+/** True when the rolling quota-reset window has elapsed since the anchor. */
+export function resetDue(u: Pick<GzUser, 'resetAnchor' | 'firstUsedAt' | 'createdAt'>, cycle: ResetCycle, now = Date.now()): boolean {
+  const win = resetCycleMs(cycle);
+  if (!win) return false;
+  const anchor = u.resetAnchor || u.firstUsedAt || u.createdAt || 0;
+  if (!anchor) return false;
+  return now >= anchor + win;
+}
+
 export function isUserAllowed(u: GzUser, now = Date.now()): { ok: boolean; reason: string } {
   if (!u.enabled) return { ok: false, reason: 'disabled' };
-  if (u.expiryAt && now > u.expiryAt) return { ok: false, reason: 'expired' };
+  const exp = effectiveExpiry(u, now);
+  if (exp && now > exp) return { ok: false, reason: 'expired' };
   if (u.quotaBytes && u.usedUp + u.usedDown >= u.quotaBytes) return { ok: false, reason: 'quota' };
   return { ok: true, reason: '' };
 }
 
+/**
+ * Lazy per-user maintenance (fire-and-forget from data/sub/status paths):
+ *  1. stamp first_used_at on the very first allowed connection
+ *  2. roll the quota-reset window when due (zero counters, move the anchor)
+ * Cheap by design: one conditional UPDATE, no cron worker needed.
+ */
+export async function lazyMaintenance(db: D1Database, u: GzUser, cycle: ResetCycle): Promise<void> {
+  if (!db || u.id <= 0) return;
+  const now = Date.now();
+  const sets: string[] = ['last_seen = ?1'];
+  const vals: Array<string | number> = [now];
+  let n = 2;
+  if (!u.firstUsedAt) {
+    sets.push('first_used_at = ?' + n);
+    vals.push(now);
+    n++;
+    if (!u.resetAnchor && cycle !== 'none') {
+      sets.push('reset_anchor = ?' + n);
+      vals.push(now);
+      n++;
+    }
+  }
+  if (resetDue(u, cycle, now)) {
+    sets.push('used_up = 0', 'used_down = 0');
+    sets.push('reset_anchor = ?' + n);
+    vals.push(now);
+    n++;
+  }
+  try {
+    await db.prepare('UPDATE users SET ' + sets.join(', ') + ' WHERE id = ?' + n + ' AND is_admin = 0').bind(...vals, u.id).run();
+    invalidateUsers();
+  } catch { /* maintenance must never break the data path */ }
+}
+
 /* ------------------------------ CRUD ------------------------------ */
 
-export interface NewUser { name: string; quotaBytes: number; expiryAt: number; isAdmin?: boolean; uuid?: string; trojanPass?: string; }
+export interface NewUser { name: string; quotaBytes: number; expiryAt: number; expiryDays?: number; isAdmin?: boolean; uuid?: string; trojanPass?: string; }
 
 export async function createUser(db: D1Database, data: NewUser): Promise<GzUser> {
   await ensureSchema(db);
@@ -99,8 +162,8 @@ export async function createUser(db: D1Database, data: NewUser): Promise<GzUser>
   const trojanPass = data.trojanPass ?? randomPass();
   const res = await db
     .prepare(
-      'INSERT INTO users (name, uuid, trojan_pass, quota_bytes, expiry_at, enabled, is_admin, created_at) ' +
-      'VALUES (?1, ?2, ?3, ?4, ?5, 1, ?6, ?7)',
+      'INSERT INTO users (name, uuid, trojan_pass, quota_bytes, expiry_at, expiry_days, enabled, is_admin, created_at) ' +
+      'VALUES (?1, ?2, ?3, ?4, ?5, ?6, 1, ?7, ?8)',
     )
     .bind(
       data.name,
@@ -108,6 +171,7 @@ export async function createUser(db: D1Database, data: NewUser): Promise<GzUser>
       trojanPass,
       Math.max(0, Math.floor(data.quotaBytes)),
       Math.max(0, Math.floor(data.expiryAt)),
+      Math.max(0, Math.floor(data.expiryDays ?? 0)),
       data.isAdmin ? 1 : 0,
       now,
     )
@@ -117,13 +181,15 @@ export async function createUser(db: D1Database, data: NewUser): Promise<GzUser>
   return {
     id, name: data.name, uuid, trojanPass,
     quotaBytes: data.quotaBytes, usedUp: 0, usedDown: 0, expiryAt: data.expiryAt,
+    expiryDays: Math.max(0, Math.floor(data.expiryDays ?? 0)),
+    firstUsedAt: 0, resetAnchor: 0,
     enabled: true, isAdmin: !!data.isAdmin, createdAt: now, lastSeen: 0,
   };
 }
 
 export interface UserPatch {
-  name?: string; quotaBytes?: number; expiryAt?: number; enabled?: boolean;
-  usedUp?: number; usedDown?: number; uuid?: string; trojanPass?: string;
+  name?: string; quotaBytes?: number; expiryAt?: number; expiryDays?: number; enabled?: boolean;
+  usedUp?: number; usedDown?: number; uuid?: string; trojanPass?: string; resetUsage?: boolean;
 }
 
 export async function updateUser(db: D1Database, id: number, patch: UserPatch): Promise<void> {
@@ -136,6 +202,13 @@ export async function updateUser(db: D1Database, id: number, patch: UserPatch): 
   if (patch.enabled !== undefined) { sets.push('enabled = ?' + (sets.length + 1)); vals.push(patch.enabled ? 1 : 0); }
   if (patch.usedUp !== undefined) { sets.push('used_up = ?' + (sets.length + 1)); vals.push(Math.max(0, Math.floor(patch.usedUp))); }
   if (patch.usedDown !== undefined) { sets.push('used_down = ?' + (sets.length + 1)); vals.push(Math.max(0, Math.floor(patch.usedDown))); }
+  if (patch.expiryDays !== undefined) { sets.push('expiry_days = ?' + (sets.length + 1)); vals.push(Math.max(0, Math.floor(patch.expiryDays))); }
+  if (patch.resetUsage) {
+    // manual reset also re-anchors the rolling reset window
+    sets.push('used_up = 0', 'used_down = 0');
+    sets.push('reset_anchor = ?' + (sets.length + 1));
+    vals.push(Date.now());
+  }
   if (patch.uuid !== undefined) { sets.push('uuid = ?' + (sets.length + 1)); vals.push(patch.uuid); }
   if (patch.trojanPass !== undefined) { sets.push('trojan_pass = ?' + (sets.length + 1)); vals.push(patch.trojanPass); }
   if (!sets.length) return;

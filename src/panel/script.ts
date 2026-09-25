@@ -200,7 +200,9 @@ export const PANEL_JS = String.raw`
   function userState(u) {
     var now = Date.now();
     if (!u.enabled) return { chip: 'bad', label: t('disabled') };
-    if (u.expiryAt && now > u.expiryAt) return { chip: 'warn', label: t('expired') };
+    if (u.expiryDays > 0 && !u.firstUsedAt) return { chip: 'ok', label: t('notStarted') };
+    var exp = u.expiryDays > 0 ? (u.firstUsedAt ? u.firstUsedAt + u.expiryDays * 86400e3 : 0) : u.expiryAt;
+    if (exp && now > exp) return { chip: 'warn', label: t('expired') };
     if (u.quotaBytes && u.usedUp + u.usedDown >= u.quotaBytes) return { chip: 'warn', label: t('quotaReached') };
     return { chip: 'ok', label: t('active') };
   }
@@ -216,11 +218,14 @@ export const PANEL_JS = String.raw`
         ? '<div class="pbar"><i style="width:' + pct + '%"></i></div><div class="meta" style="margin-top:5px"><span>' + esc(t('used')) + ': ' + fmtBytes(used) + '</span><span>' + esc(t('of')) + ' ' + (u.isAdmin ? esc(t('unlimited')) : fmtBytes(u.quotaBytes)) + '</span></div>'
         : '<div class="meta"><span>' + esc(t('used')) + ': ' + fmtBytes(used) + '</span><span>' + esc(t('unlimited')) + '</span></div>';
       var meta =
-        '<span>' + esc(t('expiry')) + ': ' + fmtDate(u.expiryAt) + '</span>' +
+        '<span>' + esc(t('expiry')) + ': ' + (u.expiryDays > 0
+          ? (u.firstUsedAt ? fmtDate(u.firstUsedAt + u.expiryDays * 86400e3) + ' (' + u.expiryDays + ' ' + esc(t('daysFromFirst')) + ')' : u.expiryDays + ' ' + esc(t('daysFromFirst')) + ' — ' + esc(t('notStarted')))
+          : fmtDate(u.expiryAt)) + '</span>' +
         '<span>' + esc(t('seen')) + ': ' + (u.lastSeen ? fmtDate(u.lastSeen) : esc(t('neverSeen'))) + '</span>';
       var btns =
         '<button class="btn sm primary" data-act="links" data-id="' + u.id + '">' + esc(t('clientLinks')) + '</button>' +
         (u.isAdmin ? '' :
+          '<button class="btn sm" data-act="status" data-id="' + u.id + '">' + esc(t('statusPage')) + '</button>' +
           '<button class="btn sm" data-act="edit" data-id="' + u.id + '">' + esc(t('edit')) + '</button>' +
           '<button class="btn sm danger" data-act="del" data-id="' + u.id + '">' + esc(t('delete')) + '</button>');
       return '<div class="ucard glass">' +
@@ -236,32 +241,49 @@ export const PANEL_JS = String.raw`
         var act = b.getAttribute('data-act');
         var u = S.users.find(function (x) { return x.id === id; });
         if (act === 'links') openLinks(u);
+        else if (act === 'status') openStatusPage(u);
         else if (act === 'edit') openEditUser(u);
         else if (act === 'del') confirmDelete(u);
       });
     });
   }
 
+  function linkRows(r) {
+    var rows = [
+      { l: 'VLESS', v: r.links.vless },
+      { l: 'Trojan', v: r.links.trojan },
+      { l: t('subBase'), v: r.subBase },
+      { l: t('subClash'), v: r.subClash },
+      { l: t('subSingbox'), v: r.subSingbox },
+      { l: t('subXray'), v: r.subXray }
+ ];
+    var html = '<button class="btn sm icon close-x" data-close="1">✕</button><h3>' + esc(t('clientLinks')) + ' · ' + esc(r._uname || '') + '</h3>' +
+      '<p class="hint" style="color:var(--mut);font-size:12px;margin-bottom:12px">' + esc(t('copySubTip')) + '</p>';
+    rows.forEach(function (row) {
+      html += '<div class="chip-row" style="margin-bottom:8px"><span class="lbl">' + esc(row.l) + '</span>' +
+        '<span class="val">' + esc(row.v) + '</span>' +
+        '<button class="btn sm" data-copybtn="' + esc(row.v) + '">' + esc(t('copy')) + '</button>' +
+        '<button class="btn sm" data-qr="' + esc(row.v) + '">' + esc(t('qr')) + '</button></div>';
+    });
+    if (r.statusPage) {
+      html += '<div style="margin-top:12px"><a class="btn sm primary" href="' + esc(r.statusPage) + '" target="_blank" rel="noopener noreferrer">⧉ ' + esc(t('openStatus')) + '</a></div>';
+    }
+    return html;
+  }
+
   function openLinks(u) {
     if (GZ.mock) { mockLinks(u); return; }
     api('/users/' + u.id + '/links').then(function (r) {
-      var rows = [
-        { l: 'VLESS', v: r.links.vless },
-        { l: 'Trojan', v: r.links.trojan },
-        { l: t('subBase'), v: r.subBase },
-        { l: t('subClash'), v: r.subClash },
-        { l: t('subSingbox'), v: r.subSingbox }
-      ];
-      var html = '<button class="btn sm icon close-x" data-close="1">✕</button><h3>' + esc(t('clientLinks')) + ' · ' + esc(u.name) + '</h3>' +
-        '<p class="hint" style="color:var(--mut);font-size:12px;margin-bottom:12px">' + esc(t('copySubTip')) + '</p>';
-      rows.forEach(function (row) {
-        html += '<div class="chip-row" style="margin-bottom:8px"><span class="lbl">' + esc(row.l) + '</span>' +
-          '<span class="val">' + esc(row.v) + '</span>' +
-          '<button class="btn sm" data-copybtn="' + esc(row.v) + '">' + esc(t('copy')) + '</button>' +
-          '<button class="btn sm" data-qr="' + esc(row.v) + '">' + esc(t('qr')) + '</button></div>';
-      });
-      openModal(html);
+      r._uname = u.name;
+      openModal(linkRows(r));
       wireCopyQr();
+    }).catch(function (e) { toast(e.message, 'err'); });
+  }
+
+  function openStatusPage(u) {
+    if (GZ.mock) { toast(t('statusPage'), 'ok'); return; }
+    api('/users/' + u.id + '/links').then(function (r) {
+      if (r.statusPage) window.open(r.statusPage, '_blank', 'noopener');
     }).catch(function (e) { toast(e.message, 'err'); });
   }
 
@@ -280,12 +302,19 @@ export const PANEL_JS = String.raw`
     var isEdit = !!u;
     var quota = u ? (u.quotaBytes / 1073741824) : 0;
     var exp = u && u.expiryAt ? new Date(u.expiryAt).toISOString().slice(0, 10) : '';
+    var mode = u && u.expiryDays > 0 ? 'first' : 'fixed';
+    var days = u && u.expiryDays ? u.expiryDays : 30;
     var html = '<button class="btn sm icon close-x" data-close="1">✕</button>' +
       '<h3>' + esc(isEdit ? t('edit') : t('addUser')) + '</h3>' +
       '<div class="field"><label>' + esc(t('name')) + '</label><input type="text" id="m-name" value="' + esc(u ? u.name : '') + '"></div>' +
-      '<div class="two-col">' +
       '<div class="field"><label>' + esc(t('quotaGB')) + '</label><input type="number" id="m-quota" min="0" step="any" value="' + quota + '"><div class="hint">' + esc(t('zeroUnlimited')) + '</div></div>' +
-      '<div class="field"><label>' + esc(t('expiryDate')) + '</label><input type="date" id="m-exp" value="' + exp + '"><div class="hint">' + esc(t('noExpiry')) + '</div></div>' +
+      '<div class="two-col">' +
+      '<div class="field"><label>' + esc(t('expiryMode')) + '</label>' +
+      '<select id="m-expmode"><option value="fixed"' + (mode === 'fixed' ? ' selected' : '') + '>' + esc(t('expFixed')) + '</option>' +
+      '<option value="first"' + (mode === 'first' ? ' selected' : '') + '>' + esc(t('expFirstUse')) + '</option></select></div>' +
+      '<div class="field" id="m-days-wrap" style="' + (mode === 'first' ? '' : 'display:none') + '"><label>' + esc(t('daysFromFirst')) + '</label>' +
+      '<input type="number" id="m-days" min="1" max="3650" value="' + days + '"></div>' +
+      '<div class="field" id="m-exp-wrap" style="' + (mode === 'fixed' ? '' : 'display:none') + '"><label>' + esc(t('expiryDate')) + '</label><input type="date" id="m-exp" value="' + exp + '"><div class="hint">' + esc(t('noExpiry')) + '</div></div>' +
       '</div>' +
       (isEdit ? '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">' +
         '<button class="btn sm" id="m-reset">' + esc(t('resetUsage')) + '</button>' +
@@ -294,12 +323,25 @@ export const PANEL_JS = String.raw`
       '<button class="btn" data-close="1">' + esc(t('cancel')) + '</button>' +
       '<button class="btn primary" id="m-save">' + esc(t('save')) + '</button></div>';
     openModal(html);
+    var modeSel = $('#m-expmode');
+    if (modeSel) modeSel.addEventListener('change', function () {
+      var first = modeSel.value === 'first';
+      $('#m-days-wrap').style.display = first ? '' : 'none';
+      $('#m-exp-wrap').style.display = first ? 'none' : '';
+    });
     $('#m-save').addEventListener('click', function () {
+      var first = modeSel && modeSel.value === 'first';
       var body = {
         name: $('#m-name').value,
-        quotaGB: Number($('#m-quota').value || 0),
-        expiryAt: $('#m-exp').value ? new Date($('#m-exp').value + 'T23:59:59').getTime() : 0
+        quotaGB: Number($('#m-quota').value || 0)
       };
+      if (first) {
+        body.expiryDays = Math.max(1, Math.floor(Number($('#m-days').value || 30)));
+        body.expiryAt = 0;
+      } else {
+        body.expiryAt = $('#m-exp').value ? new Date($('#m-exp').value + 'T23:59:59').getTime() : 0;
+        body.expiryDays = 0;
+      }
       var btn = $('#m-save'); btn.disabled = true; btn.textContent = t('saving');
       if (isEdit) {
         api('/users/' + u.id, { method: 'PATCH', body: JSON.stringify(body) })
@@ -344,6 +386,7 @@ export const PANEL_JS = String.raw`
       $('#s-proxyips').value = (s.proxyIPs || []).join('\n');
       $('#s-subpath').value = s.subPath || '';
       $('#s-panelpath').value = s.panelPath || '';
+      $('#s-resetcycle').value = s.resetCycle || 'none';
       renderDash();
     }).catch(function () {});
   }
@@ -353,7 +396,8 @@ export const PANEL_JS = String.raw`
     var body = {
       proxyIPs: $('#s-proxyips').value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean),
       subPath: $('#s-subpath').value.trim(),
-      panelPath: $('#s-panelpath').value.trim()
+      panelPath: $('#s-panelpath').value.trim(),
+      resetCycle: $('#s-resetcycle').value || 'none'
     };
     var pw = $('#s-newpw').value;
     if (pw) body.newPassword = pw;
@@ -370,24 +414,16 @@ export const PANEL_JS = String.raw`
     });
   }
 
-  /* ---------------- QR ---------------- */
-  function showQr(text) {
-    if (window.qrcode) { drawQr(text); return; }
-    var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js';
-    s.onload = function () { drawQr(text); };
-    s.onerror = function () { toast(t('error'), 'err'); };
-    document.head.appendChild(s);
+  /* ---------------- QR (server-generated, no CDN) ---------------- */
+  function b64url(text) {
+    return btoa(unescape(encodeURIComponent(text))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }
-  function drawQr(text) {
-    var svg = '';
-    try {
-      var qr = window.qrcode(0, 'M');
-      qr.addData(text); qr.make();
-      svg = qr.createSvgTag({ cellSize: 4, margin: 3, scalable: true });
-    } catch (e) { toast(t('error'), 'err'); return; }
-    openModal('<button class="btn sm icon close-x" data-close="1">✕</button>' +
-      '<div style="background:#fff;padding:14px;border-radius:16px;display:inline-block">' + svg + '</div>');
+  function showQr(text) {
+    api('/qr?t=' + b64url(text)).then(function (r) {
+      if (!r.svg) { toast(t('error'), 'err'); return; }
+      openModal('<button class="btn sm icon close-x" data-close="1">✕</button>' +
+        '<div style="background:#fff;padding:14px;border-radius:16px;display:inline-block">' + r.svg + '</div>');
+    }).catch(function () { toast(t('error'), 'err'); });
   }
 
   /* ---------------- modal ---------------- */
@@ -435,22 +471,14 @@ export const PANEL_JS = String.raw`
       },
       subBase: 'https://' + host + '/sub/' + u.subToken,
       subClash: 'https://' + host + '/sub/' + u.subToken + '/clash',
-      subSingbox: 'https://' + host + '/sub/' + u.subToken + '/singbox'
+      subSingbox: 'https://' + host + '/sub/' + u.subToken + '/singbox',
+      subXray: 'https://' + host + '/sub/' + u.subToken + '/xray',
+      statusPage: 'https://' + host + '/sub/' + u.subToken
     }, u);
   }
   function openLinksFromData(r, u) {
-    var rows = [
-      { l: 'VLESS', v: r.links.vless }, { l: 'Trojan', v: r.links.trojan },
-      { l: t('subBase'), v: r.subBase }, { l: t('subClash'), v: r.subClash }, { l: t('subSingbox'), v: r.subSingbox }
-    ];
-    var html = '<button class="btn sm icon close-x" data-close="1">✕</button><h3>' + esc(t('clientLinks')) + ' · ' + esc(u.name) + '</h3>';
-    rows.forEach(function (row) {
-      html += '<div class="chip-row" style="margin-bottom:8px"><span class="lbl">' + esc(row.l) + '</span>' +
-        '<span class="val">' + esc(row.v) + '</span>' +
-        '<button class="btn sm" data-copybtn="' + esc(row.v) + '">' + esc(t('copy')) + '</button>' +
-        '<button class="btn sm" data-qr="' + esc(row.v) + '">' + esc(t('qr')) + '</button></div>';
-    });
-    openModal(html); wireCopyQr();
+    r._uname = u.name;
+    openModal(linkRows(r)); wireCopyQr();
   }
 
   /* ---------------- wiring ---------------- */

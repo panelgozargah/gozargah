@@ -2,8 +2,8 @@
  * Gozargah — global config, types and shared errors.
  */
 
-export const VERSION = '1.1.0';
-export const SCHEMA_VERSION = 1;
+export const VERSION = '1.2.0';
+export const SCHEMA_VERSION = 2;
 
 /** D1 binding name (see wrangler.toml) */
 export const DB_BINDING = 'GZ_DB';
@@ -41,4 +41,15 @@ export const DEFAULTS = {
   usageFlushBytes: 512 * 1024,
   usageFlushUsers: 8,
   usageFlushIntervalMs: 30_000,
+  /** rolling quota-reset windows (ms) — user.resetAnchor + window */
+  resetCycleMs: { daily: 86_400_000, weekly: 7 * 86_400_000, monthly: 30 * 86_400_000 },
 } as const;
+
+export type ResetCycle = 'none' | 'daily' | 'weekly' | 'monthly';
+
+export function resetCycleMs(cycle: ResetCycle): number {
+  if (cycle === 'daily') return DEFAULTS.resetCycleMs.daily;
+  if (cycle === 'weekly') return DEFAULTS.resetCycleMs.weekly;
+  if (cycle === 'monthly') return DEFAULTS.resetCycleMs.monthly;
+  return 0;
+}

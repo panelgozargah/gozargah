@@ -7,3 +7,12 @@ dist/
 
 preview.html
 scripts/.preview-build.mjs
+statuspage.html
+qa_v12/
+scripts/.test-build.mjs
+scripts/.userpage-build.mjs
+scripts/.art_qa.mjs
+scripts/.term_qa.mjs
+scripts/.social_shot.mjs
+make_release.py
+verify_live.py

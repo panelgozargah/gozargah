@@ -9,13 +9,15 @@
  *  - every read cached for DEFAULTS.cacheTtlMs with in-flight promise dedup
  */
 
-import { DEFAULTS, SCHEMA_VERSION } from '../config';
+import { DEFAULTS, SCHEMA_VERSION, ResetCycle } from '../config';
 
 export interface SettingsBlob {
   schemaVersion: number;
   panelPath: string;
   subPath: string;
   proxyIPs: string[];
+  /** rolling quota-reset window for every non-admin user */
+  resetCycle: ResetCycle;
   passwordSalt: string;
   passwordHash: string;
   pwIterations: number;
@@ -42,7 +44,10 @@ const DDL = [
      enabled INTEGER NOT NULL DEFAULT 1,
      is_admin INTEGER NOT NULL DEFAULT 0,
      created_at INTEGER NOT NULL,
-     last_seen INTEGER NOT NULL DEFAULT 0
+     last_seen INTEGER NOT NULL DEFAULT 0,
+     first_used_at INTEGER NOT NULL DEFAULT 0,
+     expiry_days INTEGER NOT NULL DEFAULT 0,
+     reset_anchor INTEGER NOT NULL DEFAULT 0
    )`,
   `CREATE TABLE IF NOT EXISTS events (
      id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,13 +62,23 @@ const DDL = [
    )`,
 ];
 
+/** v1.2 additions for databases created with v1.x (guarded ALTERs). */
+const MIGRATIONS = [
+  'ALTER TABLE users ADD COLUMN first_used_at INTEGER NOT NULL DEFAULT 0',
+  'ALTER TABLE users ADD COLUMN expiry_days INTEGER NOT NULL DEFAULT 0',
+  'ALTER TABLE users ADD COLUMN reset_anchor INTEGER NOT NULL DEFAULT 0',
+];
+
 let schemaPromise: Promise<void> | null = null;
 
-/** Create tables once per isolate (promise-deduped). */
+/** Create tables once per isolate (promise-deduped) + guarded v1->v2 migrations. */
 export function ensureSchema(db: D1Database): Promise<void> {
   if (!schemaPromise) {
     schemaPromise = (async () => {
       await db.batch(DDL.map((sql) => db.prepare(sql)));
+      for (const sql of MIGRATIONS) {
+        try { await db.prepare(sql).run(); } catch { /* column already exists */ }
+      }
     })().catch((e) => {
       schemaPromise = null; // allow retry on next request
       throw e;
@@ -102,6 +117,8 @@ export async function loadSettings(db: D1Database): Promise<SettingsBlob | null>
     .first<{ value: string; rev: number }>();
   if (!row) return null;
   const value = JSON.parse(row.value) as SettingsBlob;
+  // forward-fill fields introduced after v1.1 (schema v2)
+  if (!value.resetCycle) value.resetCycle = 'none';
   putCache(SETTINGS_KEY + '#rev', row.rev);
   putCache(SETTINGS_KEY, value);
   return value;

@@ -168,13 +168,20 @@ body[data-view="main"] .wrap{padding-top:24px}
 .field{margin-bottom:16px}
 .field label{display:block;font-size:12.5px;color:var(--gz-text-muted);margin-bottom:7px;font-weight:600}
 .field .hint{font-size:11px;color:var(--gz-text-disabled);margin-top:5px}
-input[type=text],input[type=password],input[type=number],input[type=date],input[type=datetime-local],textarea{
+input[type=text],input[type=password],input[type=number],input[type=date],input[type=datetime-local],textarea,select{
   width:100%;background:var(--gz-glass-bg);border:1px solid rgba(148,163,184,0.14);border-radius:var(--gz-radius-control);
   color:var(--gz-text);font-family:inherit;font-size:13.5px;padding:10px 14px;outline:none;
   transition:border var(--gz-dur),box-shadow var(--gz-dur)}
+select{cursor:pointer;-webkit-appearance:none;appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--gz-text-muted) 50%),linear-gradient(135deg,var(--gz-text-muted) 50%,transparent 50%);
+  background-position:calc(0% + 16px) calc(50% + 1px),calc(0% + 21px) calc(50% + 1px);
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+html[dir="rtl"] select{padding-inline-start:40px}
+html[dir="ltr"] select{padding-inline-end:40px;background-position:calc(100% - 16px) calc(50% + 1px),calc(100% - 21px) calc(50% + 1px)}
+select option{background:#0B1020;color:#F1F5F9}
 input::placeholder,textarea::placeholder{color:var(--gz-text-disabled)}
 textarea{resize:vertical;min-height:84px;direction:ltr;text-align:left;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
-input:focus,textarea:focus{border-color:rgba(0,217,255,.55);
+input:focus,textarea:focus,select:focus{border-color:rgba(0,217,255,.55);
   box-shadow:0 0 0 3px rgba(0,217,255,.12),0 0 24px -8px rgba(124,58,237,.45)}
 input.mono{direction:ltr;text-align:left;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
 

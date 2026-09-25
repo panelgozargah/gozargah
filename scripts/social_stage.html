@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1280px;height:640px;overflow:hidden;font-family:Vazirmatn,'Segoe UI',Tahoma,sans-serif;
+  background:#050816;color:#F1F5F9;position:relative}
+body::before{content:'';position:absolute;inset:0;background:
+  radial-gradient(900px 500px at 85% -10%,rgba(124,58,237,.25),transparent 60%),
+  radial-gradient(760px 440px at 5% 8%,rgba(0,217,255,.18),transparent 58%),
+  radial-gradient(700px 480px at 55% 115%,rgba(217,70,239,.14),transparent 60%);}
+.stars{position:absolute;inset:0}
+.stars i{position:absolute;border-radius:50%;background:#fff}
+.wrap{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 84px}
+.top{display:flex;align-items:center;gap:18px;margin-bottom:6px}
+.gw{width:104px;height:96px}
+h1{font-size:88px;font-weight:900;line-height:1.05;background:linear-gradient(180deg,#FFF,#C9EFFF);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.en{font-size:26px;letter-spacing:14px;background:linear-gradient(90deg,#00D9FF,#2563EB,#7C3AED,#D946EF);
+  -webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700;margin:6px 2px 14px}
+.sub{font-size:25px;color:#8B9BC0;font-weight:500;max-width:900px;line-height:1.7}
+.chips{display:flex;gap:14px;margin-top:30px}
+.chip{border:1px solid rgba(148,163,184,.28);background:rgba(255,255,255,.05);border-radius:999px;
+  padding:10px 24px;font-size:19px;font-weight:700}
+.chip b{background:linear-gradient(90deg,#00D9FF,#D946EF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.v{position:absolute;bottom:36px;inset-inline-start:84px;color:#5A6A8F;font-size:17px;font-weight:700;
+  direction:ltr;font-family:ui-monospace,monospace}
+.url{position:absolute;bottom:36px;inset-inline-end:84px;color:#5A6A8F;font-size:17px;direction:ltr}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+<div class="wrap">
+  <div class="top">
+    <svg class="gw" viewBox="0 0 120 104" fill="none"><defs>
+      <linearGradient id="g" x1="18" y1="96" x2="102" y2="8" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#00D9FF"/><stop offset=".45" stop-color="#2563EB"/><stop offset=".75" stop-color="#7C3AED"/><stop offset="1" stop-color="#D946EF"/>
+      </linearGradient></defs>
+      <path d="M30,88 V52 C30,30 44,18 60,16 C76,18 90,30 90,52 V88" stroke="url(#g)" stroke-width="6" stroke-linecap="round"/>
+      <path d="M14,88 H106" stroke="rgba(148,163,184,.4)" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="60" cy="16" r="6" fill="#D946EF"/>
+    </svg>
+    <h1>گذرگاه</h1>
+  </div>
+  <div class="en">GOZARGAH</div>
+  <div class="sub">پنل پروکسی چندکاربره روی Cloudflare Workers — پنل، موتور پروکسی، اشتراک‌ساز و صفحهٔ وضعیت، همه در یک فایل. با تیون عمیق اپراتور و اتصال خودکارِ بهترین مسیر.</div>
+  <div class="chips">
+    <span class="chip">یک فایل · <b>صفر وابستگی</b></span>
+    <span class="chip"><b>۵ اپراتور</b> · تیون عمیق</span>
+    <span class="chip">Xray <b>auto-best</b></span>
+    <span class="chip"><b>حسابداری</b> بایت واقعی</span>
+  </div>
+</div>
+<div class="v">v1.2.0 · MIT</div>
+<div class="url">github.com/panelgozargah/gozargah</div>
+<script>
+const s = document.getElementById('stars');
+for (let i = 0; i < 90; i++) {
+  const d = document.createElement('i');
+  const sz = Math.random() * 2.2 + 0.4;
+  d.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random() * 100}%;top:${Math.random() * 100}%;opacity:${0.08 + Math.random() * 0.4}`;
+  s.appendChild(d);
+}
+</script>
+</body>
+</html>

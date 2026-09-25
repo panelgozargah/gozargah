@@ -17,6 +17,7 @@ import {
   requireAuth, sessionCookie, verifyPanelPassword,
 } from '../auth';
 import { buildLinks, subTokenFor } from '../subscription';
+import { qrSvg } from '../utils/qr';
 import { logRing } from '../utils/log';
 import { pbkdf2Hex, randomHex } from '../utils/crypto';
 
@@ -33,7 +34,8 @@ function publicUser(u: GzUser): Record<string, unknown> {
   return {
     id: u.id, name: u.name, uuid: u.uuid, trojanPass: u.trojanPass,
     quotaBytes: u.quotaBytes, usedUp: u.usedUp, usedDown: u.usedDown,
-    expiryAt: u.expiryAt, enabled: u.enabled, isAdmin: u.isAdmin,
+    expiryAt: u.expiryAt, expiryDays: u.expiryDays, firstUsedAt: u.firstUsedAt,
+    enabled: u.enabled, isAdmin: u.isAdmin,
     createdAt: u.createdAt, lastSeen: u.lastSeen,
   };
 }
@@ -96,6 +98,7 @@ export async function handlePanelApi(
         panelPath: s?.panelPath ?? eff.panelPath,
         subPath: s?.subPath ?? eff.subPath,
         proxyIPs: s?.proxyIPs ?? eff.proxyIPs,
+        resetCycle: s?.resetCycle ?? eff.resetCycle ?? 'none',
         isDefaultPassword: s?.isDefaultPassword ?? eff.isDefaultPassword,
         dbOk: eff.dbOk,
       });
@@ -108,7 +111,7 @@ export async function handlePanelApi(
       const next = await saveSettings(db, (prev) => {
         const cur: SettingsBlob = prev ?? {
           schemaVersion: 1, panelPath: eff.panelPath, subPath: eff.subPath,
-          proxyIPs: eff.proxyIPs, passwordSalt: eff.passwordSalt, passwordHash: eff.passwordHash,
+          proxyIPs: eff.proxyIPs, resetCycle: 'none', passwordSalt: eff.passwordSalt, passwordHash: eff.passwordHash,
           pwIterations: eff.pwIterations, isDefaultPassword: eff.isDefaultPassword, createdAt: Date.now(),
         };
         const out: SettingsBlob = { ...cur };
@@ -122,6 +125,13 @@ export async function handlePanelApi(
           const v = body.subPath.trim().toLowerCase();
           if (!/^[a-z0-9][a-z0-9-]{2,31}$/.test(v)) throw new GzError('invalid subPath', 'validation');
           out.subPath = v;
+        }
+        if (typeof body.resetCycle === 'string') {
+          const v = body.resetCycle;
+          if (v !== 'none' && v !== 'daily' && v !== 'weekly' && v !== 'monthly') {
+            throw new GzError('invalid resetCycle', 'validation');
+          }
+          out.resetCycle = v;
         }
         if (Array.isArray(body.proxyIPs)) {
           const ips = (body.proxyIPs as unknown[])
@@ -180,7 +190,9 @@ export async function handlePanelApi(
       if (!Number.isFinite(quotaGB) || quotaGB < 0 || quotaGB > 1024 * 100) throw new GzError('invalid quotaGB', 'validation');
       const expiryAt = Number(body.expiryAt ?? 0);
       if (!Number.isFinite(expiryAt) || expiryAt < 0) throw new GzError('invalid expiryAt', 'validation');
-      const u = await createUser(db, { name, quotaBytes: Math.round(quotaGB * 1024 ** 3), expiryAt });
+      const expiryDays = Number(body.expiryDays ?? 0);
+      if (!Number.isFinite(expiryDays) || expiryDays < 0 || expiryDays > 3650) throw new GzError('invalid expiryDays', 'validation');
+      const u = await createUser(db, { name, quotaBytes: Math.round(quotaGB * 1024 ** 3), expiryAt, expiryDays });
       await addEvent(db, 'user_created', name);
       return json({ user: publicUser(u) }, 201);
     }
@@ -207,8 +219,14 @@ export async function handlePanelApi(
           if (!Number.isFinite(x) || x < 0) throw new GzError('invalid expiryAt', 'validation');
           patch.expiryAt = x;
         }
+        if (body.expiryDays !== undefined) {
+          const d = Number(body.expiryDays);
+          if (!Number.isFinite(d) || d < 0 || d > 3650) throw new GzError('invalid expiryDays', 'validation');
+          patch.expiryDays = d;
+          if (d > 0) patch.expiryAt = 0; // modes are mutually exclusive
+        }
         if (body.enabled !== undefined) patch.enabled = !!body.enabled;
-        if (body.resetUsage === true) { patch.usedUp = 0; patch.usedDown = 0; }
+        if (body.resetUsage === true) { patch.resetUsage = true; patch.usedUp = 0; patch.usedDown = 0; }
         if (body.rotateCredentials === true) {
           const u = (await listUsers(db)).find((x) => x.id === id);
           if (u?.isAdmin) throw new GzError('cannot rotate admin credentials (reset D1 instead)', 'validation');
@@ -234,13 +252,26 @@ export async function handlePanelApi(
       const u = (await listUsers(db)).find((x) => x.id === id);
       if (!u) throw new GzError('user not found', 'not_found');
       const host = new URL(request.url).hostname;
-      const links = buildLinks(host, u);
+      const links = buildLinks(host, u, null);
+      const tok = await subTokenFor(host, u.uuid);
       return json({
         links,
-        subBase: 'https://' + host + '/' + eff.subPath + '/' + (await subTokenFor(host, u.uuid)),
-        subClash: 'https://' + host + '/' + eff.subPath + '/' + (await subTokenFor(host, u.uuid)) + '/clash',
-        subSingbox: 'https://' + host + '/' + eff.subPath + '/' + (await subTokenFor(host, u.uuid)) + '/singbox',
+        subBase: 'https://' + host + '/' + eff.subPath + '/' + tok,
+        subClash: 'https://' + host + '/' + eff.subPath + '/' + tok + '/clash',
+        subSingbox: 'https://' + host + '/' + eff.subPath + '/' + tok + '/singbox',
+        subXray: 'https://' + host + '/' + eff.subPath + '/' + tok + '/xray',
+        statusPage: 'https://' + host + '/' + eff.subPath + '/' + tok,
       });
+    }
+
+    // on-demand QR (server-side generation — v1.2 removed the client CDN loader)
+    if (action === 'qr' && method === 'GET') {
+      const raw = new URL(request.url).searchParams.get('t') ?? '';
+      let text = '';
+      try { text = decodeURIComponent(escape(atob(raw.replace(/-/g, '+').replace(/_/g, '/')))); }
+      catch { throw new GzError('invalid qr payload', 'validation'); }
+      if (!text || text.length > 512) throw new GzError('invalid qr payload', 'validation');
+      return json({ svg: await qrSvg(text, 230) });
     }
 
     if (action === 'events' && method === 'GET') {

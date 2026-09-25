@@ -18,7 +18,7 @@ import { dialWithFallback } from './proxy';
 import { parseVless, vlessOkResponse } from '../protocols/vless';
 import { parseTrojan } from '../protocols/trojan';
 import {
-  findUserByTrojanHash, getUserByUuid, GzUser, isUserAllowed, maybeFlushUsage, queueUsage,
+  findUserByTrojanHash, getUserByUuid, GzUser, isUserAllowed, lazyMaintenance, maybeFlushUsage, queueUsage,
 } from '../db/users';
 import { envlessSettings } from '../settings';
 import { DEFAULTS } from '../config';
@@ -27,6 +27,7 @@ import { DEFAULTS } from '../config';
 const IMPLICIT_USER: GzUser = {
   id: 0, name: 'admin', uuid: '', trojanPass: '',
   quotaBytes: 0, usedUp: 0, usedDown: 0, expiryAt: 0,
+  expiryDays: 0, firstUsedAt: 0, resetAnchor: 0,
   enabled: true, isAdmin: true, createdAt: 0, lastSeen: 0,
 };
 
@@ -44,7 +45,7 @@ export function acceptWebSocket(request: Request, env: Env, ctx: ExecutionContex
 
   const host = new URL(request.url).host;
 
-  ctx.waitUntil(pumpProxy(server, early, env, host).catch((e) => {
+  ctx.waitUntil(pumpProxy(server, early, env, host, ctx).catch((e) => {
     glog('proxy pump error: ' + (e instanceof Error ? e.message : String(e)));
     try { server.close(1011); } catch { /* ignore */ }
   }));
@@ -78,7 +79,7 @@ function wsReadable(server: WebSocket): ReadableStream<Uint8Array> {
   });
 }
 
-async function pumpProxy(server: WebSocket, early: Uint8Array | null, env: Env, host: string): Promise<void> {
+async function pumpProxy(server: WebSocket, early: Uint8Array | null, env: Env, host: string, ctx: ExecutionContext): Promise<void> {
   const reader = wsReadable(server).getReader();
 
   // --- buffered header read (early data may carry only a partial header) ---
@@ -105,6 +106,14 @@ async function pumpProxy(server: WebSocket, early: Uint8Array | null, env: Env, 
       glog('user blocked (' + verdict.reason + ') id=' + info.user.id);
       try { server.close(1008); } catch { /* ignore */ }
       return;
+    }
+    // v1.2: first-use stamping + rolling quota reset (fire-and-forget)
+    if (info.user.id > 0 && env.GZ_DB) {
+      const cycle = ((await getResetCycle(env)) ?? 'none') as 'none' | 'daily' | 'weekly' | 'monthly';
+      ctx.waitUntil(
+        lazyMaintenance(env.GZ_DB, info.user, cycle)
+          .catch(() => { /* ignore */ }),
+      );
     }
   } else {
     throw new GzError('auth failed', 'auth_failed');
@@ -234,6 +243,17 @@ async function getProxyIPs(env: Env): Promise<string[]> {
     } catch { /* fall through */ }
   }
   return [...DEFAULTS.proxyIPs];
+}
+
+async function getResetCycle(env: Env): Promise<string | null> {
+  if (env.GZ_DB) {
+    try {
+      const { loadSettings } = await import('../db/store');
+      const s = await loadSettings(env.GZ_DB);
+      if (s) return s.resetCycle || 'none';
+    } catch { /* fall through */ }
+  }
+  return null;
 }
 
 function stableIndex(seed: string, mod: number): number {

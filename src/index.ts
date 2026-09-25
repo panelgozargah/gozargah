@@ -8,18 +8,21 @@
  *   GET  /favicon.png         -> embedded logo
  *   GET  /{panelPath}         -> panel UI (SPA)
  *   POST /{panelPath}/api/*   -> panel JSON API
- *   GET  /{subPath}/{token}       -> subscription (UA-sniffed format)
- *   GET  /{subPath}/{token}/{app} -> explicit format (clash | singbox | v2ray)
+ *   GET  /{subPath}/{token}       -> browser: rich status page · client: sub (UA-sniffed)
+ *   GET  /{subPath}/{token}/{app} -> explicit format (clash | singbox | v2ray | xray | page)
  *   GET  anything else        -> stealth landing (no info leak, nahan-style)
  */
 
 import { Env, VERSION } from './config';
 import { getEffectiveSettings } from './settings';
 import { acceptWebSocket } from './handlers/websocket';
-import { findUserByToken, renderSub, sniffApp, subHeaders } from './subscription';
+import { findUserByToken, renderSub, resolveApp, subHeaders } from './subscription';
+import { resolveOpts } from './sub/operators';
+import { lazyMaintenance } from './db/users';
 import { handlePanelApi } from './panel/api';
 import { panelHtml } from './panel/ui';
 import { landingHtml } from './panel/landing';
+import { userPageHtml } from './panel/userpage';
 import { LOGO_FAV_B64 } from './assets/logo';
 import { glog, logRing } from './utils/log';
 
@@ -52,7 +55,7 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
   if (rawPath === 'favicon.ico' || rawPath === 'favicon.png') {
     const bytes = atob(LOGO_FAV_B64.split(',')[1]);
     const buf = new Uint8Array(bytes.length);
-    for (let i = 0; i < bytes.length; i++) buf[i] = bytes.charCodeAt(i);
+    for (let i = 0; i < buf.length; i++) buf[i] = bytes.charCodeAt(i);
     return new Response(buf, { headers: { 'content-type': 'image/png', 'cache-control': 'public, max-age=86400' } });
   }
   if (rawPath === 'robots.txt') {
@@ -87,14 +90,36 @@ async function route(request: Request, env: Env, ctx: ExecutionContext): Promise
   if (rawPath.startsWith(eff.subPath + '/') && env.GZ_DB) {
     const segs = rawPath.slice(eff.subPath.length + 1).split('/').filter(Boolean);
     const token = segs[0] ?? '';
-    const appOverride = (segs[1] ?? url.searchParams.get('app') ?? '').toLowerCase();
+    const appOverride = (segs[1] ?? url.searchParams.get('app') ?? '');
     const user = await findUserByToken(env.GZ_DB, url.hostname, token);
     if (user) {
-      const app = appOverride === 'clash' || appOverride === 'singbox' || appOverride === 'v2ray'
-        ? appOverride
-        : sniffApp(request.headers.get('user-agent') ?? '');
-      const { body } = renderSub(app, url.hostname, user);
-      return new Response(body, { headers: subHeaders(eff, url.hostname, user, app) });
+      const opts = resolveOpts(url.searchParams.get('op'), url.searchParams.get('ech'));
+      const lang = url.searchParams.get('lang') === 'en' ? 'en' : 'fa';
+      const app = resolveApp(appOverride, request.headers.get('user-agent') ?? '');
+
+      // v1.2: lazy maintenance (first-use stamp + rolling reset) on any sub/status read
+      if (user.id > 0) {
+        ctx.waitUntil(lazyMaintenance(env.GZ_DB, user, eff.resetCycle || 'none').catch(() => { /* ignore */ }));
+      }
+
+      if (app === 'page') {
+        const html = await userPageHtml({
+          host: url.hostname,
+          user,
+          token,
+          subPath: eff.subPath,
+          panelPath: eff.panelPath,
+          lang,
+          opts,
+          echOn: !!opts.ech,
+        });
+        return new Response(html, {
+          headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' },
+        });
+      }
+
+      const { body } = renderSub(app, url.hostname, user, opts);
+      return new Response(body, { headers: subHeaders(eff, url.hostname, user, app, opts, token) });
     }
     // unknown token: fall through to stealth landing (no user enumeration)
   }

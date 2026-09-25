@@ -90,6 +90,21 @@ export const FA: I18nDict = {
   menu: 'منو',
   panelLink: 'آدرس پنل',
   copySubTip: 'این لینک را در کلاینت (v2rayNG، Streisand، Hiddify و…) وارد کنید.',
+  subXray: 'اشتراک (Xray — اتصال خودکار بهترین)',
+  statusPage: 'صفحهٔ وضعیت کاربر',
+  openStatus: 'باز کردن صفحهٔ وضعیت',
+  expiryMode: 'نوع انقضا',
+  expFixed: 'تاریخ ثابت',
+  expFirstUse: 'از اولین اتصال',
+  daysFromFirst: 'روز از اولین اتصال',
+  notStarted: 'شروع نشده',
+  resetCycle: 'ریست دوره‌ای مصرف (همهٔ کاربران)',
+  resetCycleHint: 'هر بازه مصرف همهٔ کاربران صفر می‌شود — پنجرهٔ چرخشی از اولین اتصال هر کاربر.',
+  resetNone: 'خاموش',
+  resetDaily: 'روزانه',
+  resetWeekly: 'هفتگی',
+  resetMonthly: 'ماهانه (۳۰ روز)',
+  qrServer: 'QR',
 };
 
 export const EN: I18nDict = {
@@ -178,6 +193,21 @@ export const EN: I18nDict = {
   menu: 'Menu',
   panelLink: 'Panel URL',
   copySubTip: 'Paste this link into your client (v2rayNG, Streisand, Hiddify, …).',
+  subXray: 'Subscription (Xray — auto-best)',
+  statusPage: 'User status page',
+  openStatus: 'Open status page',
+  expiryMode: 'Expiry mode',
+  expFixed: 'Fixed date',
+  expFirstUse: 'From first use',
+  daysFromFirst: 'days from first connection',
+  notStarted: 'Not started',
+  resetCycle: 'Usage auto-reset (all users)',
+  resetCycleHint: 'Usage counters roll over every cycle — the rolling window starts from each user\'s first connection.',
+  resetNone: 'Off',
+  resetDaily: 'Daily',
+  resetWeekly: 'Weekly',
+  resetMonthly: 'Monthly (30 days)',
+  qrServer: 'QR',
 };
 
 export const DICTS: Record<string, I18nDict> = { fa: FA, en: EN };

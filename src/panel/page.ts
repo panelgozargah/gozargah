@@ -187,6 +187,16 @@ ${particles()}
             </div>
           </div>
           <div class="field">
+            <label data-i18n="resetCycle"></label>
+            <select id="s-resetcycle">
+              <option value="none" data-i18n="resetNone">خاموش</option>
+              <option value="daily" data-i18n="resetDaily">روزانه</option>
+              <option value="weekly" data-i18n="resetWeekly">هفتگی</option>
+              <option value="monthly" data-i18n="resetMonthly">ماهانه (۳۰ روز)</option>
+            </select>
+            <div class="hint" data-i18n="resetCycleHint"></div>
+          </div>
+          <div class="field">
             <label data-i18n="newPassword"></label>
             <input type="password" id="s-newpw" autocomplete="new-password">
             <div class="hint" data-i18n="leaveBlankKeep"></div>
