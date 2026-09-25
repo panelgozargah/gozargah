@@ -142,11 +142,11 @@ async function main() {
     const tags = (mci.outbounds as Array<{ tag: string }>).map((o) => o.tag);
     assert.equal(tags.length, 4); // gz-vless + gz-trojan + gzx-frag (transport) + gz-frag (clone)
     assert.ok(tags[3].startsWith('gz-frag'));
-    const frag = (mci.outbounds as Array<Record<string, any>>).find((o) => o.tag === 'gzx-frag');
+    const frag = (mci.outbounds as Array<Record<string, any>>).find((o) => o.tag === 'gzx-frag')!;
     assert.equal(frag.protocol, 'freedom');
     assert.deepEqual(frag.settings.fragment, { packets: 'tlshello', length: '100-200', interval: '10-20' });
     // the clone dials through the fragment transport
-    const clone = (mci.outbounds as Array<Record<string, any>>).find((o) => o.tag.startsWith('gz-frag'));
+    const clone = (mci.outbounds as Array<Record<string, any>>).find((o) => o.tag.startsWith('gz-frag'))!;
     assert.equal(clone.dialerProxy, 'gzx-frag');
     // balancer must never route through the internal gzx-* transport
     const sel: string[] = mci.routing.balancers[0].selector;
